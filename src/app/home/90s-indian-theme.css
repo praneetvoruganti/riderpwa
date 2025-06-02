@@ -1,0 +1,932 @@
+/* 90s Indian Maximalist Theme CSS */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  /* 90s Indian Maximalist Color Palette */
+  --indian-peacock-blue: #146B91;
+  --indian-maroon: #9A1750;
+  --indian-mustard: #E3B505;
+  --indian-emerald: #1D7874;
+  --indian-gold: #E6AF2E;
+  --indian-pink: #FF5C8D;
+  --indian-orange: #FF7E5F;
+  --indian-purple: #6C4675;
+  --indian-teal: #2A9D8F;
+  --indian-red: #E63946;
+  
+  /* Background patterns and textures */
+  --pattern-bg: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  
+  /* Border patterns */
+  --border-pattern: repeating-linear-gradient(45deg, var(--indian-gold) 0, var(--indian-gold) 1px, transparent 0, transparent 50%);
+  
+  /* Shadow effects with vibrant colors */
+  --shadow-glow: 0 0 8px rgba(255, 94, 141, 0.5), 0 0 16px rgba(230, 175, 46, 0.3);
+  --text-shadow: 2px 2px 0 rgba(20, 107, 145, 0.7);
+}
+
+/* Base styling for 90s Indian maximalist theme */
+.indian-maximalist {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--indian-peacock-blue);
+  background-image: var(--pattern-bg);
+  color: #fff;
+  position: relative;
+  overflow-x: hidden;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Decorative border for the entire app */
+.indian-maximalist::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--indian-gold),
+    var(--indian-gold) 20px,
+    var(--indian-maroon) 20px,
+    var(--indian-maroon) 40px,
+    var(--indian-emerald) 40px,
+    var(--indian-emerald) 60px
+  );
+  z-index: 10;
+}
+
+/* Nostalgic header styling */
+.indian-header {
+  background-color: var(--indian-maroon);
+  padding: 16px;
+  border-bottom: 4px solid var(--indian-gold);
+  position: relative;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.indian-header::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--indian-gold),
+    var(--indian-gold) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+.indian-brand-logo {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #fff;
+  text-shadow: var(--text-shadow);
+  letter-spacing: 2px;
+  position: relative;
+  display: inline-block;
+}
+
+.indian-brand-logo::before,
+.indian-brand-logo::after {
+  content: '★';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--indian-gold);
+  font-size: 20px;
+}
+
+.indian-brand-logo::before {
+  left: -24px;
+}
+
+.indian-brand-logo::after {
+  right: -24px;
+}
+
+.indian-brand-accent {
+  color: var(--indian-gold);
+  font-size: 32px;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+/* Menu styling */
+.indian-menu-container {
+  position: relative;
+}
+
+.indian-icon-btn {
+  background-color: var(--indian-gold);
+  color: var(--indian-maroon);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.indian-icon-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.indian-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 220px;
+  background-color: var(--indian-peacock-blue);
+  border: 3px solid var(--indian-gold);
+  border-radius: 8px;
+  box-shadow: var(--shadow-glow);
+  z-index: 100;
+  overflow: hidden;
+  animation: dropIn 0.3s ease-out;
+}
+
+.indian-menu-items {
+  padding: 8px;
+}
+
+.indian-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  color: #fff;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.indian-menu-item:hover {
+  background-color: var(--indian-maroon);
+}
+
+.indian-menu-item .material-icon {
+  color: var(--indian-gold);
+  font-size: 20px;
+}
+
+.indian-menu-divider {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--indian-gold),
+    var(--indian-gold) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  margin: 8px 0;
+}
+
+.indian-menu-item-logout {
+  color: var(--indian-pink);
+}
+
+/* Section styling */
+.indian-section {
+  margin: 20px 0;
+  padding: 0 16px;
+}
+
+.indian-section-title {
+  color: var(--indian-gold);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
+  padding-left: 24px;
+}
+
+.indian-section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-color: var(--indian-gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* Map container styling */
+.indian-map-container {
+  border: 4px solid var(--indian-gold);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-glow);
+  height: 300px;
+}
+
+/* Override leaflet map styling */
+.indian-map {
+  border-radius: 8px;
+}
+
+.indian-map .leaflet-control-zoom {
+  border: 2px solid var(--indian-gold) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.indian-map .leaflet-control-zoom a {
+  background-color: var(--indian-maroon) !important;
+  color: white !important;
+  border-color: var(--indian-gold) !important;
+}
+
+.indian-map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background-color: rgba(154, 23, 80, 0.85);
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 1000;
+  border-bottom: 2px dashed var(--indian-gold);
+}
+
+/* Location status styling */
+.indian-location-status {
+  margin-top: 12px;
+  background-color: rgba(20, 107, 145, 0.7);
+  border-radius: 8px;
+  padding: 10px;
+  border: 2px solid var(--indian-teal);
+}
+
+.indian-status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.indian-status-item:last-child {
+  margin-bottom: 0;
+}
+
+.indian-status-icon {
+  color: var(--indian-gold);
+}
+
+.indian-status-text {
+  font-size: 14px;
+  color: white;
+}
+
+/* Card styling */
+.indian-card {
+  background-color: var(--indian-peacock-blue);
+  border: 3px solid var(--indian-gold);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-glow);
+}
+
+.indian-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--indian-pink),
+    var(--indian-pink) 10px,
+    var(--indian-purple) 10px,
+    var(--indian-purple) 20px
+  );
+}
+
+.indian-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Option buttons styling */
+.indian-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.indian-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: var(--indian-teal);
+  border: 2px solid var(--indian-gold);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.indian-option-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background-color: var(--indian-emerald);
+}
+
+.indian-option-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.indian-option-active {
+  background-color: var(--indian-maroon);
+  border-color: var(--indian-gold);
+  position: relative;
+}
+
+.indian-option-active::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  border: 2px dashed var(--indian-gold);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.indian-option-icon {
+  color: var(--indian-gold);
+  font-size: 24px;
+}
+
+.indian-option-text {
+  flex: 1;
+}
+
+.indian-option-label {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.indian-option-desc {
+  display: block;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.indian-option-secondary {
+  background-color: var(--indian-purple);
+}
+
+/* Input styling */
+.indian-input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  border: 2px solid var(--indian-teal);
+  transition: all 0.2s ease;
+}
+
+.indian-input-group:focus-within {
+  border-color: var(--indian-gold);
+  box-shadow: 0 0 0 2px rgba(230, 175, 46, 0.3);
+}
+
+.indian-input-icon {
+  color: var(--indian-gold);
+  font-size: 24px;
+}
+
+.indian-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.indian-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 8px 0;
+  outline: none;
+}
+
+.indian-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.indian-input-label {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  font-size: 12px;
+  color: var(--indian-gold);
+  transition: all 0.2s ease;
+}
+
+/* Slider styling */
+.indian-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.indian-slider-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.indian-slider-icon {
+  color: var(--indian-gold);
+  font-size: 24px;
+}
+
+.indian-slider-text {
+  flex: 1;
+}
+
+.indian-slider-label {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.indian-slider-desc {
+  display: block;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.indian-slider-value {
+  font-weight: 600;
+  color: var(--indian-gold);
+  font-size: 18px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--indian-gold);
+}
+
+.indian-slider-container {
+  position: relative;
+  padding: 0 8px;
+}
+
+.indian-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--indian-teal), var(--indian-maroon));
+  outline: none;
+  margin: 16px 0;
+}
+
+.indian-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--indian-gold);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.indian-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--indian-gold);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.indian-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--indian-gold);
+}
+
+/* Button styling */
+.indian-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--indian-maroon), var(--indian-purple));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--indian-gold);
+}
+
+.indian-button::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--indian-gold),
+    var(--indian-gold) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.indian-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.indian-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.indian-button-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.indian-button-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.indian-button-icon {
+  color: var(--indian-gold);
+}
+
+/* Alert styling */
+.indian-alert {
+  background-color: var(--indian-purple);
+  border: 2px solid var(--indian-pink);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.indian-alert::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--indian-pink),
+    var(--indian-pink) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.indian-alert-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.indian-alert-icon {
+  color: var(--indian-pink);
+  font-size: 24px;
+  margin-top: 2px;
+}
+
+.indian-alert-text {
+  flex: 1;
+}
+
+.indian-alert-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: var(--indian-gold);
+}
+
+.indian-alert-message {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Vehicle selection styling */
+.indian-vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.indian-vehicle-card {
+  background-color: var(--indian-peacock-blue);
+  border: 3px solid var(--indian-teal);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.indian-vehicle-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.indian-vehicle-selected {
+  border-color: var(--indian-gold);
+  background-color: rgba(230, 175, 46, 0.1);
+}
+
+.indian-vehicle-content {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+  position: relative;
+}
+
+.indian-vehicle-icon {
+  background-color: var(--indian-maroon);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--indian-gold);
+}
+
+.indian-vehicle-icon .material-icon {
+  font-size: 24px;
+  color: var(--indian-gold);
+}
+
+.indian-vehicle-info {
+  flex: 1;
+}
+
+.indian-vehicle-name {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.indian-vehicle-description {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.indian-vehicle-price {
+  text-align: right;
+}
+
+.indian-price-amount {
+  display: block;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--indian-gold);
+}
+
+.indian-price-unit {
+  display: block;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.indian-vehicle-selected-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.indian-vehicle-selected-indicator .material-icon {
+  color: var(--indian-gold);
+  font-size: 24px;
+}
+
+/* Trip summary styling */
+.indian-trip-summary-card {
+  background-color: var(--indian-peacock-blue);
+  border: 3px solid var(--indian-gold);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-glow);
+}
+
+.indian-trip-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, var(--indian-maroon), var(--indian-purple), var(--indian-maroon));
+}
+
+.indian-route-details {
+  margin: 16px 0;
+}
+
+.indian-route-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.indian-route-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.indian-route-icon.pickup {
+  background-color: var(--indian-emerald);
+  border: 2px solid var(--indian-gold);
+}
+
+.indian-route-icon.destination {
+  background-color: var(--indian-maroon);
+  border: 2px solid var(--indian-gold);
+}
+
+.indian-route-icon .material-icon {
+  font-size: 16px;
+  color: white;
+}
+
+.indian-route-text {
+  flex: 1;
+}
+
+.indian-route-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--indian-gold);
+  margin-bottom: 2px;
+}
+
+.indian-route-value {
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.indian-route-connector {
+  width: 2px;
+  height: 24px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--indian-gold),
+    var(--indian-gold) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+  margin-left: 16px;
+  margin-bottom: 8px;
+}
+
+.indian-trip-parameter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--indian-gold);
+}
+
+.indian-parameter-icon {
+  color: var(--indian-gold);
+  font-size: 20px;
+}
+
+.indian-parameter-text {
+  flex: 1;
+}
+
+.indian-parameter-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--indian-gold);
+  margin-bottom: 2px;
+}
+
+.indian-parameter-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes dropIn {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Grain texture overlay */
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Utility classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Media query for mobile-first approach */
+@media (min-width: 768px) {
+  .indian-maximalist {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
