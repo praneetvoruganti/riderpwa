@@ -1,0 +1,194 @@
+/* Vehicle Selection Compact Styles */
+
+.mb-sm {
+  margin-bottom: 10px;
+}
+
+.premium-compact-route {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.premium-vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.premium-vehicle-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+  overflow: hidden;
+}
+
+.premium-vehicle-card:hover {
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.premium-vehicle-selected {
+  border: 2px solid #4CAF50;
+  box-shadow: 0 2px 8px rgba(76,175,80,0.3);
+}
+
+.premium-vehicle-content {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.premium-vehicle-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background-color: rgba(76,175,80,0.1);
+}
+
+.premium-vehicle-icon .material-icon {
+  font-size: 20px;
+  color: #4CAF50;
+}
+
+.premium-vehicle-info {
+  flex: 1;
+}
+
+.premium-vehicle-name {
+  font-weight: bold;
+  font-size: 15px;
+  margin: 0 0 2px;
+}
+
+.premium-vehicle-description {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.premium-vehicle-price {
+  margin-right: 10px;
+  text-align: right;
+}
+
+.premium-price-amount {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4CAF50;
+  white-space: nowrap;
+}
+
+.premium-vehicle-selected-indicator {
+  margin-left: 5px;
+}
+
+.premium-vehicle-selected-indicator .material-icon {
+  font-size: 18px;
+  color: #4CAF50;
+}
+
+.premium-trip-summary-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.premium-route-point {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.premium-route-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.premium-route-icon.pickup {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.premium-route-icon.pickup .material-icon {
+  color: #3498db;
+  font-size: 14px;
+}
+
+.premium-route-icon.destination {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.premium-route-icon.destination .material-icon {
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.premium-route-text {
+  flex: 1;
+}
+
+.premium-route-value {
+  font-size: 13px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.premium-route-connector {
+  width: 2px;
+  height: 10px;
+  background-color: #ccc;
+  margin-left: 12px;
+}
+
+/* Find Button at Bottom */
+.premium-button {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 15px;
+}
+
+.premium-button:hover {
+  background-color: #3d8b40;
+}
+
+.premium-button-disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.premium-button-text {
+  display: flex;
+  align-items: center;
+}
+
+.premium-button-icon {
+  margin-left: 8px;
+}

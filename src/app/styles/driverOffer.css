@@ -1,0 +1,315 @@
+/* Driver Found & Ride Confirmation Compact Styles */
+
+.premium-compact-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.premium-success-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.premium-success-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(76,175,80,0.1);
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.premium-success-icon .material-icon {
+  font-size: 28px;
+  color: #4CAF50;
+}
+
+.premium-success-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.premium-success-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0 0;
+}
+
+/* Driver Info Section */
+.premium-driver-compact {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.premium-driver-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.premium-driver-avatar .material-icon {
+  font-size: 24px;
+  color: #666;
+}
+
+.premium-driver-details {
+  flex: 1;
+}
+
+.premium-driver-details h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 2px;
+  color: #333;
+}
+
+.premium-vehicle-badge {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.premium-vehicle-badge .material-icon {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.premium-license {
+  background: #f0f0f0;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+.premium-eta {
+  background: rgba(76,175,80,0.1);
+  color: #4CAF50;
+  border-radius: 30px;
+  padding: 4px 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.premium-eta .material-icon {
+  font-size: 14px;
+  margin-right: 2px;
+}
+
+/* Trip Details */
+.premium-compact-trip {
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.premium-trip-info-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 10px;
+}
+
+.premium-trip-info-item {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding: 0 5px;
+}
+
+.premium-trip-info-item .material-icon {
+  font-size: 16px;
+  color: #666;
+  margin-right: 6px;
+}
+
+.premium-trip-info-item small {
+  font-size: 10px;
+  color: #999;
+  margin: 0;
+  line-height: 1;
+  display: block;
+}
+
+.premium-trip-info-item p {
+  font-size: 12px;
+  font-weight: 500;
+  margin: 2px 0 0;
+  color: #333;
+  line-height: 1.2;
+}
+
+/* Driver Details Card - For Confirmation Screen */
+.premium-driver-details-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* ETA Badge for Confirmation */
+.premium-eta.confirm {
+  padding: 4px 10px;
+  background-color: rgba(76, 175, 80, 0.15);
+  border-radius: 20px;
+}
+
+/* Contact Button */
+.premium-contact-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.premium-contact-button:hover {
+  background-color: #e0e0e0;
+}
+
+.premium-contact-button .material-icon {
+  font-size: 16px;
+  color: #555;
+}
+
+/* Trip Info Box */
+.premium-trip-info-box {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* Route Box */
+.premium-route-box {
+  padding: 10px 5px;
+  border-top: 1px solid #f0f0f0;
+  margin-bottom: 5px;
+}
+
+.premium-route-point {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.premium-route-text small {
+  font-size: 10px;
+  color: #999;
+  display: block;
+  margin: 0 0 2px;
+}
+
+.premium-route-text p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Buttons */
+.premium-action-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.premium-btn-cancel, 
+.premium-btn-confirm {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.premium-btn-cancel {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.premium-btn-confirm {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.premium-btn-cancel:hover {
+  background-color: #f0f0f0;
+}
+
+.premium-btn-confirm:hover {
+  background-color: #3d8b40;
+}
+
+.premium-btn-cancel .material-icon,
+.premium-btn-confirm .material-icon {
+  font-size: 16px;
+}
+
+/* Book Again Button */
+.premium-book-again-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 0;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin: 5px 0 15px;
+}
+
+.premium-book-again-btn:hover {
+  background-color: #3d8b40;
+}
+
+.premium-book-again-btn .material-icon {
+  font-size: 18px;
+}

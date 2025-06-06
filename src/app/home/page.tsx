@@ -10,10 +10,13 @@ import PermissionToggles from '../components/PermissionToggles';
 import VehicleClassCard, { VehicleClass } from '../components/VehicleClassCard';
 import MicroInteractions from '../components/MicroInteractions';
 
-// Import permission toggles styles
+// Import styles
 import '../styles/permissionToggles.css';
+import '@/app/styles/mapDisplay.css';
+import '@/app/styles/vehicleSelection.css';
+import '@/app/styles/driverOffer.css';
 
-const MapDisplay = dynamic(() => import('../components/MapDisplay'), {
+const MapDisplay = dynamic(() => import('@/app/components/MapDisplay'), {
   ssr: false,
   loading: () => <p style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#616161' }}>Loading map...</p>
 });
@@ -570,7 +573,7 @@ export default function HomePage() {
     }
     return (
       <div className="container animate-fade-in">
-        <header className="flex justify-between items-center mb-md">
+        <header className="flex justify-between items-center mb-sm">
           <h1 className="text-xl font-bold">Choose Ride</h1>
           <button 
             onClick={() => setCurrentView(HomePageView.MAP_AND_DESTINATION)} 
@@ -580,47 +583,9 @@ export default function HomePage() {
           </button>
         </header>
         
-        {/* Trip Summary */}
-        <div className="premium-trip-summary-card">
-          <h3 className="premium-section-title">Trip</h3>
-          <div className="premium-route-details">
-            <div className="premium-route-point">
-              <div className="premium-route-icon pickup">
-                <span className="material-icon">my_location</span>
-              </div>
-              <div className="premium-route-text">
-                <h4 className="premium-route-label">Pickup Location</h4>
-                <p className="premium-route-value">{L.latLng(tripParams.pickup).toString()}</p>
-              </div>
-            </div>
-            
-            <div className="premium-route-connector"></div>
-            
-            <div className="premium-route-point">
-              <div className="premium-route-icon destination">
-                <span className="material-icon">place</span>
-              </div>
-              <div className="premium-route-text">
-                <h4 className="premium-route-label">Destination</h4>
-                <p className="premium-route-value">{tripParams.destination}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="premium-trip-parameter">
-            <div className="premium-parameter-icon">
-              <span className="material-icon">radar</span>
-            </div>
-            <div className="premium-parameter-text">
-              <h4 className="premium-parameter-label">Radius</h4>
-              <p className="premium-parameter-value">{(tripParams.radius/1000).toFixed(1)} km</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Vehicle Selection */}
-        <section className="premium-section">
-          <h2 className="premium-section-title">Ride Type</h2>
+        {/* Vehicle Selection - Moved to top */}
+        <section className="premium-section mb-sm">
+          <h2 className="premium-section-title mb-sm">Select Vehicle Type</h2>
           <div className="premium-vehicle-list">
             {MOCK_VEHICLE_CLASSES.map((vc) => (
               <div 
@@ -639,10 +604,13 @@ export default function HomePage() {
                   </div>
                   <div className="premium-vehicle-info">
                     <h3 className="premium-vehicle-name">{vc.name}</h3>
-                    <p className="premium-vehicle-description">{vc.description.split(' ').slice(0, 5).join(' ')}...</p>
+                    <p className="premium-vehicle-description">{vc.id === 'auto' ? 'Quick, convenient' : 
+                       vc.id === 'economy' ? 'Affordable rides' : 
+                       vc.id === 'premium' ? 'Comfortable sedan' : 
+                       'Larger vehicle'}</p>
                   </div>
                   <div className="premium-vehicle-price">
-                    <span className="premium-price-amount">Government mandated fares</span>
+                    <span className="premium-price-amount">Govt. mandated fare</span>
                   </div>
                   {selectedVehicleClass?.id === vc.id && (
                     <div className="premium-vehicle-selected-indicator">
@@ -653,16 +621,42 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <button
-            onClick={handleProceedToSearch}
-            disabled={!selectedVehicleClass}
-            className={`premium-button ${!selectedVehicleClass ? 'premium-button-disabled' : ''} mt-md`}
-          >
-            <span className="premium-button-text">
-              Find <span className="premium-button-icon material-icon">search</span>
-            </span>
-          </button>
         </section>
+        
+        {/* Trip Summary - Moved to bottom */}
+        <div className="premium-trip-summary-card mb-sm">
+          <div className="premium-compact-route">
+            <div className="premium-route-point">
+              <div className="premium-route-icon pickup">
+                <span className="material-icon">my_location</span>
+              </div>
+              <div className="premium-route-text">
+                <p className="premium-route-value">{tripParams.destination ? 'Your Location' : L.latLng(tripParams.pickup).toString()}</p>
+              </div>
+            </div>
+            
+            <div className="premium-route-connector" style={{height: '15px'}}></div>
+            
+            <div className="premium-route-point">
+              <div className="premium-route-icon destination">
+                <span className="material-icon">place</span>
+              </div>
+              <div className="premium-route-text">
+                <p className="premium-route-value">{tripParams.destination}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={handleProceedToSearch}
+          disabled={!selectedVehicleClass}
+          className={`premium-button ${!selectedVehicleClass ? 'premium-button-disabled' : ''}`}
+        >
+          <span className="premium-button-text">
+            Find <span className="premium-button-icon material-icon">search</span>
+          </span>
+        </button>
       </div>
     );
   }
@@ -774,117 +768,105 @@ export default function HomePage() {
     }
     return (
       <div className="container animate-fade-in">
-        <header className="premium-offer-header">
-          <div className="premium-offer-icon">
-            <span className="material-icon">check_circle</span>
+        <div className="premium-compact-card">
+          <div className="premium-success-header">
+            <div className="premium-success-icon">
+              <span className="material-icon">check_circle</span>
+            </div>
+            <h2>Driver Found!</h2>
           </div>
-          <h1 className="premium-offer-title">Driver Found!</h1>
-          <p className="premium-offer-subtitle">Review ride</p>
-        </header>
-        
-        {/* Driver Card */}
-        <div className="premium-driver-offer-card">
-          {/* Driver Info */}
-          <div className="premium-driver-offer-header">
-            <div className="premium-driver-profile">
-              <div className="premium-driver-avatar">
-                <span className="material-icon">person</span>
-              </div>
-              <div className="premium-driver-info">
-                <h3 className="premium-driver-name">{driverOffer.driverName}</h3>
-                <div className="premium-vehicle-info">
-                  <span className="material-icon">directions_car</span>
-                  <span className="premium-vehicle-model">{driverOffer.vehicleModel}</span>
-                  <span className="premium-license-plate">{driverOffer.vehicleLicensePlate}</span>
-                </div>
+
+          {/* Driver Info - Streamlined */}
+          <div className="premium-driver-compact">
+            <div className="premium-driver-avatar">
+              <span className="material-icon">person</span>
+            </div>
+            <div className="premium-driver-details">
+              <h3>{driverOffer.driverName}</h3>
+              <div className="premium-vehicle-badge">
+                <span className="material-icon">
+                  {selectedVehicleClass && selectedVehicleClass.id === 'auto' ? 'electric_rickshaw' : 'directions_car'}
+                </span>
+                <span>{driverOffer.vehicleModel}</span>
+                <span className="premium-license">{driverOffer.vehicleLicensePlate}</span>
               </div>
             </div>
-            <div className="premium-eta-badge">
+            <div className="premium-eta">
               <span className="material-icon">schedule</span>
               <span>{driverOffer.etaMinutes} min</span>
             </div>
           </div>
           
-          {/* Trip Details */}
-          <div className="premium-offer-trip-details">
-            <h3 className="premium-section-title">Trip</h3>
-            
-            <div className="premium-route-details">
+          {/* Trip Details - Compact */}
+          <div className="premium-compact-trip">
+            {/* Route */}
+            <div className="premium-compact-route">
               <div className="premium-route-point">
                 <div className="premium-route-icon pickup">
                   <span className="material-icon">my_location</span>
                 </div>
                 <div className="premium-route-text">
-                  <h4 className="premium-route-label">Pickup Location</h4>
-                  <p className="premium-route-value">{L.latLng(tripParams.pickup).toString()}</p>
+                  <p className="premium-route-value">{tripParams.destination ? 'Your Location' : L.latLng(tripParams.pickup).toString().substring(0, 25) + '...'}</p>
                 </div>
               </div>
               
-              <div className="premium-route-connector"></div>
+              <div className="premium-route-connector" style={{height: '15px'}}></div>
               
               <div className="premium-route-point">
                 <div className="premium-route-icon destination">
                   <span className="material-icon">place</span>
                 </div>
                 <div className="premium-route-text">
-                  <h4 className="premium-route-label">Destination</h4>
                   <p className="premium-route-value">{tripParams.destination}</p>
                 </div>
               </div>
             </div>
             
-            <div className="premium-trip-info-grid">
-              <div className="premium-trip-info-card">
-                <div className="premium-trip-info-icon">
-                  <span className="material-icon">category</span>
-                </div>
-                <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Type</h4>
-                  <p className="premium-trip-info-value">{selectedVehicleClass.name}</p>
-                </div>
-              </div>
-              
-              <div className="premium-trip-info-card">
-                <div className="premium-trip-info-icon">
-                  <span className="material-icon">route</span>
-                </div>
-                <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Trip Distance</h4>
-                  <p className="premium-trip-info-value">{tripDistance || 20} km</p>
+            {/* Trip Info - Horizontal layout */}
+            <div className="premium-trip-info-row">
+              <div className="premium-trip-info-item">
+                <span className="material-icon">category</span>
+                <div>
+                  <small>Type</small>
+                  <p>{selectedVehicleClass?.name}</p>
                 </div>
               </div>
               
-              <div className="premium-trip-info-card">
-                <div className="premium-trip-info-icon">
-                  <span className="material-icon">payments</span>
+              <div className="premium-trip-info-item">
+                <span className="material-icon">route</span>
+                <div>
+                  <small>Trip Distance</small>
+                  <p>{tripDistance || 17} km</p>
                 </div>
-                <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Fare</h4>
-                  <p className="premium-trip-info-value">Government mandated fares</p>
+              </div>
+              
+              <div className="premium-trip-info-item">
+                <span className="material-icon">payments</span>
+                <div>
+                  <small>Fare</small>
+                  <p>Government mandated fares</p>
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Buttons */}
-          <div className="premium-offer-actions">
+          {/* Action Buttons */}
+          <div className="premium-action-buttons">
             <button 
               onClick={() => setCurrentView(HomePageView.VEHICLE_SELECTION)}
-              className="premium-btn premium-btn-secondary"
+              className="premium-btn-cancel"
             >
               <span className="material-icon">close</span>
               <span>Cancel</span>
             </button>
             <button 
               onClick={() => {
-                // Skip the confirmation screen entirely and go straight to the confirmed state
                 setCurrentView(HomePageView.TRIP_CONFIRMATION);
               }}
-              className="premium-button"
+              className="premium-btn-confirm"
             >
-              <span className="premium-button-text">
-                Confirm <span className="premium-button-icon material-icon">check_circle</span>
-              </span>
+              <span className="material-icon">check_circle</span>
+              <span>Confirm</span>
             </button>
           </div>
         </div>
@@ -1441,116 +1423,104 @@ export default function HomePage() {
     }
     return (
       <div className="container animate-fade-in">
-        {/* Confirmation Header */}
-        <header className="premium-confirmation-header">
-          <div className="premium-confirmation-icon">
-            <span className="material-icon">check_circle</span>
+        <div className="premium-compact-card">
+          {/* Success Header */}
+          <div className="premium-success-header">
+            <div className="premium-success-icon confirm">
+              <span className="material-icon">check_circle</span>
+            </div>
+            <h2>Ride Confirmed</h2>
+            <p className="premium-success-subtitle">Your driver is on the way</p>
           </div>
-          <h1 className="premium-confirmation-title">Ride Confirmed</h1>
-          <p className="premium-confirmation-subtitle">Your driver is on the way</p>
-        </header>
-        
-        {/* Trip Details Card */}
-        <div className="premium-trip-card">
-          {/* Driver Info */}
-          <div className="premium-driver-details">
-            <div className="premium-driver-header">
-              <h2 className="premium-section-title">Your Driver</h2>
-              <div className="premium-eta-badge">
+          
+          {/* Driver Info - Compact */}
+          <div className="premium-driver-details-card">
+            <div className="premium-driver-compact">
+              <div className="premium-driver-avatar">
+                <span className="material-icon">person</span>
+              </div>
+              <div className="premium-driver-details">
+                <h3>{driverOffer.driverName}</h3>
+                <div className="premium-vehicle-badge">
+                  <span className="material-icon">
+                    {selectedVehicleClass && selectedVehicleClass.id === 'auto' ? 'electric_rickshaw' : 'directions_car'}
+                  </span>
+                  <span>{driverOffer.vehicleModel}</span>
+                  <span className="premium-license">{driverOffer.vehicleLicensePlate}</span>
+                </div>
+              </div>
+              <div className="premium-eta confirm">
                 <span className="material-icon">schedule</span>
                 <span>Arriving in {driverOffer.etaMinutes} min</span>
               </div>
             </div>
-            
-            <div className="premium-driver-profile">
-              <div className="premium-driver-avatar">
-                <span className="material-icon">person</span>
-              </div>
-              <div className="premium-driver-info">
-                <h3 className="premium-driver-name">{driverOffer.driverName}</h3>
-                <div className="premium-vehicle-info">
-                  <span className="material-icon">directions_car</span>
-                  <span className="premium-vehicle-model">{driverOffer.vehicleModel}</span>
-                  <span className="premium-license-plate">{driverOffer.vehicleLicensePlate}</span>
+            <button 
+              onClick={() => alert('Contact Driver feature coming soon!')}
+              className="premium-contact-button"
+            >
+              <span className="material-icon">phone</span>
+              <span>Contact</span>
+            </button>
+          </div>
+          
+          {/* Trip Details - Horizontal Layout */}
+          <div className="premium-trip-info-box">
+            <div className="premium-trip-info-row">
+              <div className="premium-trip-info-item">
+                <span className="material-icon">payments</span>
+                <div>
+                  <small>Fare</small>
+                  <p>Government mandated fares</p>
                 </div>
               </div>
-              <button 
-                onClick={() => alert('Contact Driver feature coming soon!')}
-                className="premium-contact-btn"
-              >
-                <span className="material-icon">phone</span>
-                <span>Contact</span>
-              </button>
+              
+              <div className="premium-trip-info-item">
+                <span className="material-icon">route</span>
+                <div>
+                  <small>Distance</small>
+                  <p>{tripDistance || 17} km</p>
+                </div>
+              </div>
+              
+              <div className="premium-trip-info-item">
+                <span className="material-icon">timer</span>
+                <div>
+                  <small>Duration</small>
+                  <p>15-25 min</p>
+                </div>
+              </div>
             </div>
           </div>
           
-          {/* Ride Details */}
-          <div className="premium-trip-details">
-            <h2 className="premium-section-title">Trip Details</h2>
-            
-            <div className="premium-trip-info-grid">
-              <div className="premium-trip-info-card">
-                <div className="premium-trip-info-icon">
-                  <span className="material-icon">payments</span>
-                </div>
-                <div className="premium-fare-detail">
-                <span className="premium-fare-label">Fare</span>
-                <span className="premium-fare-value">Government mandated fares</span>
+          {/* Route Details */}
+          <div className="premium-route-box">
+            <div className="premium-route-point">
+              <div className="premium-route-icon pickup">
+                <span className="material-icon">my_location</span>
               </div>
-              </div>
-              
-              <div className="premium-trip-info-card">
-                <div className="premium-trip-info-icon">
-                  <span className="material-icon">route</span>
-                </div>
-                <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Trip Distance</h4>
-                  <p className="premium-trip-info-value">{tripDistance || 20} km</p>
-                </div>
-              </div>
-              
-              <div className="premium-trip-info-card">
-                <div className="premium-trip-info-icon">
-                  <span className="material-icon">timer</span>
-                </div>
-                <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Trip Duration</h4>
-                  <p className="premium-trip-info-value">15-25 min</p>
-                  <p className="premium-trip-info-note">Calculated on pickup</p>
-                </div>
+              <div className="premium-route-text">
+                <small>Pickup</small>
+                <p>{tripParams.destination ? 'Your Location' : L.latLng(tripParams.pickup).toString().substring(0, 25) + '...'}</p>
               </div>
             </div>
             
-            <div className="premium-route-details">
-              <div className="premium-route-point">
-                <div className="premium-route-icon pickup">
-                  <span className="material-icon">my_location</span>
-                </div>
-                <div className="premium-route-text">
-                  <h4 className="premium-route-label">Pickup</h4>
-                  <p className="premium-route-value">{L.latLng(tripParams.pickup).toString()}</p>
-                </div>
+            <div className="premium-route-connector" style={{height: '15px'}}></div>
+            
+            <div className="premium-route-point">
+              <div className="premium-route-icon destination">
+                <span className="material-icon">place</span>
               </div>
-              
-              <div className="premium-route-connector"></div>
-              
-              <div className="premium-route-point">
-                <div className="premium-route-icon destination">
-                  <span className="material-icon">place</span>
-                </div>
-                <div className="premium-route-text">
-                  <h4 className="premium-route-label">Destination</h4>
-                  <p className="premium-route-value">{tripParams.destination}</p>
-                </div>
+              <div className="premium-route-text">
+                <small>Destination</small>
+                <p>{tripParams.destination}</p>
               </div>
             </div>
           </div>
         </div>
         
-        {/* Done Button */}
+        {/* Book Again Button */}
         <button 
           onClick={() => {
-            // Reset states for a new booking
             setTripParams(null);
             setSelectedVehicleClass(null);
             setDriverOffer(null);
@@ -1558,11 +1528,10 @@ export default function HomePage() {
             setSearchStatusMessage('');
             setCurrentView(HomePageView.MAP_AND_DESTINATION);
           }}
-          className="premium-button mt-md"
+          className="premium-book-again-btn"
         >
-          <span className="premium-button-text">
-            Book Again <span className="premium-button-icon material-icon">add_circle</span>
-          </span>
+          <span className="material-icon">add_circle</span>
+          <span>Book Again</span>
         </button>
       </div>
     );
