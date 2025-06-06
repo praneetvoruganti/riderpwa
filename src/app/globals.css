@@ -696,6 +696,7 @@ input[type="range"]:active::-moz-range-thumb {
 
 .light-theme .premium-input-label {
   color: #616161;
+  /* background-color: #f7f7f7; */
 }
 
 .light-theme .premium-alert {

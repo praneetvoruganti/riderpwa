@@ -1,0 +1,118 @@
+.permission-toggles {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 0 12px;
+  z-index: 900; /* High but below modals and menus */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  pointer-events: auto; /* Ensure clicks register */
+  transition: opacity 0.2s ease;
+}
+
+.permission-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 245, 245, 0.85);
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Secondary control size per guidelines */
+  height: 40px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+} /* Secondary control size as per guidelines */
+
+.permission-toggle:hover {
+  opacity: 1;
+}
+
+.permission-toggle .material-icon {
+  font-size: 18px;
+  margin-right: 6px;
+}
+
+.permission-toggle .permission-label {
+  display: none; /* Hide text labels on mobile */
+}
+
+.permission-toggle .toggle-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  transition: background-color 0.2s ease;
+  border: 1px solid white;
+}
+
+.permission-toggle.active {
+  background: #e8f5e9;
+}
+
+.permission-toggle.active .material-icon {
+  color: #4CAF50;
+}
+
+.permission-toggle.active .toggle-indicator {
+  background-color: #4CAF50;
+}
+
+.permission-toggle.inactive .material-icon {
+  color: #9E9E9E;
+}
+
+/* Expand toggles with labels on larger screens */
+@media (min-width: 768px) {
+  .permission-toggles {
+    gap: 12px;
+    padding: 0 16px;
+    margin-bottom: 20px;
+  }
+  
+  .permission-toggle {
+    width: auto;
+    border-radius: 20px;
+    padding: 6px 12px;
+    justify-content: flex-start;
+  }
+  
+  .permission-toggle .material-icon {
+    margin-right: 6px;
+  }
+  
+  .permission-toggle .permission-label {
+    display: inline;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .permission-toggle .toggle-indicator {
+    position: static;
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    border: none;
+  }
+}
+
+/* Special UI states */
+.permission-toggles.is-selecting,
+.permission-toggles.is-menu-open {
+  opacity: 0.3; /* Fade when map selection is active or menu is open */
+}
+
+/* Hover state for desktop */
+@media (hover: hover) {
+  .permission-toggle:hover {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}

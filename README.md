@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RiderPWA - Ride-Hailing Progressive Web Application
+
+RiderPWA is a modern, user-friendly progressive web application for ride-hailing services. It provides a streamlined interface for users to request rides, select vehicle types, and manage payments.
+
+## Features
+
+- **Location-Based Services**: Set pickup and destination locations using map selection or current location
+- **Permission Management**: Mobile-friendly permission toggles for location and notifications
+- **Vehicle Selection**: Choose from multiple vehicle types with price estimates
+- **Driver Matching**: Connect with available drivers in real-time
+- **Ride Tracking**: View driver information, ETA, and trip details
+- **Promise2Pay**: Flexible payment options for multiple rides
+- **Responsive Design**: Works across mobile and desktop devices
+
+## UI/UX Guidelines
+
+This application follows strict UI/UX guidelines for an optimal mobile experience:
+
+1. **Hierarchy Ranking**:
+   - Rank 1 (Top 65%): Primary inputs and actions
+   - Rank 2 (Lower portion): Secondary information
+   - Rank 3: Collapsed or hidden elements
+
+2. **Text Simplification**:
+   - Labels: Direct, action-oriented, ≤3 words
+   - Help/Error text: Brief, ≤2 lines, truncated when needed
+   - Buttons: Self-explanatory with minimal text
+
+3. **Touch Optimization**:
+   - Primary CTAs: ≥48dp
+   - Secondary controls: ≥40dp
+   - Inline controls: ≥36dp
+
+4. **Adaptive Layout**:
+   - Compresses UI elements on smaller viewports
+   - Maintains minimum 20dp spacing between rank levels
 
 ## Getting Started
 
-First, run the development server:
+To run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app/home/page.tsx`: Main application component with all views
+- `src/app/components/PermissionToggles.tsx`: Component for managing location and notification permissions
+- `src/app/styles/permissionToggles.css`: Styles for the permission toggles component
 
-## Learn More
+## Permission Management
 
-To learn more about Next.js, take a look at the following resources:
+The application includes a mobile-friendly permission management system with the following features:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Always-visible toggles** for both location and notification permissions
+- **Real-time permission state tracking** reflecting browser permission status
+- **App-level enable/disable control** separate from browser permissions
+- **Visual feedback** with toggle state indicating both permission status and enabled state
+- **Accessibility support** with proper ARIA labels and touch targets
+- **Unobtrusive design** that maintains visibility without interfering with core workflows
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Permission toggles dynamically adapt to the UI context:
+- Reduced opacity when app is in selection mode or menus are open
+- Label visibility changes based on viewport size (icon-only on mobile)
+- Proper spacing and alignment with all other UI elements
+- `src/app/globals.css`: Global styles and UI components
 
-## Deploy on Vercel
+## Technology Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Framework**: [Next.js](https://nextjs.org) (React)
+- **Maps**: Leaflet for interactive maps
+- **UI Components**: Custom-built components with Material icons
+- **Styling**: CSS with responsive design patterns
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development Notes
+
+- The application uses simulated data for demonstration purposes
+- Location services require permission from the user
+- The UI is optimized for mobile-first experiences with a focus on touch interactions
+
+## Deployment
+
+Deploy using Vercel or any static site hosting:
+
+```bash
+npm run build
+```
+
+The build output in the `.next` directory can be deployed to any static hosting service.

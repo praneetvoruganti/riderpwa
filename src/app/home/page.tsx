@@ -6,8 +6,12 @@ import dynamic from 'next/dynamic';
 import L, { LatLngExpression, LatLng } from 'leaflet'; 
 import { isLoggedIn, clearRiderSession } from '../utils/auth';
 import PermissionsManager from '../components/PermissionsManager';
+import PermissionToggles from '../components/PermissionToggles';
 import VehicleClassCard, { VehicleClass } from '../components/VehicleClassCard';
 import MicroInteractions from '../components/MicroInteractions';
+
+// Import permission toggles styles
+import '../styles/permissionToggles.css';
 
 const MapDisplay = dynamic(() => import('../components/MapDisplay'), {
   ssr: false,
@@ -248,6 +252,18 @@ const MOCK_VEHICLE_CLASSES: VehicleClass[] = [
 ];
 
 export default function HomePage() {
+  // Import required CSS at the component level to ensure it's loaded
+  useEffect(() => {
+    // Make sure material icons are loaded for the permission toggles
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
   const router = useRouter();
   const [currentView, setCurrentView] = useState<HomePageView>(HomePageView.MAP_AND_DESTINATION);
   const [tripParams, setTripParams] = useState<TripParameters | null>(null);
@@ -257,6 +273,7 @@ export default function HomePage() {
   const [searchStatusMessage, setSearchStatusMessage] = useState<string>('');
   const [driverOffer, setDriverOffer] = useState<DriverOfferDetails | null>(null);
 
+  // Permission state tracking - stores browser-level permission status
   const [permissionsStatus, setPermissionsStatus] = useState<AppPermissionsStatus>({
     geolocation: null,
     notifications: null,
@@ -280,15 +297,23 @@ export default function HomePage() {
     }
   }, [router]);
 
+  /**
+   * Effect to fetch user location whenever permission status changes
+   * This responds to both initial permission grants and changes from the toggles
+   */
   useEffect(() => {
     if (permissionsStatus.geolocation === 'granted') {
+      // Permission is granted, attempt to get current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // Successfully retrieved location
           const newLocation: LatLngExpression = [position.coords.latitude, position.coords.longitude];
           setCurrentLocation(newLocation);
           setLocationError(null);
         },
         (error) => {
+          // Error getting location despite permission being granted
+          // This could happen if device GPS is disabled or other technical issues
           console.error('Error getting location:', error);
           setLocationError(`Error getting location: ${error.message}. Please ensure location services are enabled.`);
           setCurrentLocation(null); 
@@ -296,11 +321,13 @@ export default function HomePage() {
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else if (permissionsStatus.geolocation === 'denied') {
+      // Permission explicitly denied by user in browser
       setLocationError('Geolocation permission denied. Cannot display current location.');
       setCurrentLocation(null);
     } else if (permissionsStatus.geolocation === 'prompt'){
+      // Permission not yet decided, waiting for user response to browser prompt
       setLocationError('Geolocation permission is pending. Please respond to the prompt.');
-       setCurrentLocation(null);
+      setCurrentLocation(null);
     }
   }, [permissionsStatus.geolocation]);
 
@@ -322,11 +349,61 @@ export default function HomePage() {
     }
   };
 
-  const handlePermissionsUpdate = (status: AppPermissionsStatus) => {
-    setPermissionsStatus(status);
-    console.log('Permissions updated in HomePage:', status);
+  /**
+   * Updates the app's permission status based on changes from PermissionsManager
+   * This keeps track of system-level permission states (granted/denied/prompt)
+   */
+  const handlePermissionsUpdate = (perms: AppPermissionsStatus) => {
+    setPermissionsStatus(perms);
   };
 
+  /**
+   * Handles changes from the permission toggle buttons
+   * This manages the app-level enabled/disabled state for permissions
+   * which is separate from the browser's permission states
+   * 
+   * @param type - The type of permission being toggled ('location' or 'notification')
+   * @param enabled - The new state of the toggle (true/false)
+   */
+  const handlePermissionToggle = (type: 'location' | 'notification', enabled: boolean) => {
+    // If a permission is disabled via toggle, update app state
+    if (type === 'location' && !enabled) {
+      // When location is disabled by the user, show an informative message
+      setLocationError('Location disabled by user');
+    } else if (type === 'location' && enabled && permissionsStatus.geolocation === 'granted') {
+      // When location is re-enabled and permission is already granted,
+      // clear any error messages and attempt to get the current location again
+      setLocationError(null);
+      // Re-fetch location since it was re-enabled
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newLocation: LatLngExpression = [position.coords.latitude, position.coords.longitude];
+          setCurrentLocation(newLocation);
+          setLocationError(null);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setLocationError(`Error getting location: ${error.message}. Please ensure location services are enabled.`);
+          setCurrentLocation(null); 
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+    
+    // For notifications, we just need to track the state
+    if (type === 'notification') {
+      setPermissionsStatus(prev => ({
+        ...prev,
+        notifications: enabled && prev.notifications === 'granted' ? 'granted' : 'denied'
+      }));
+    }
+  };
+
+  /**
+   * Request notification permission through system prompt
+   * This is an alternative way to enable notifications besides using the toggle
+   * Used primarily for the notification card button
+   */
   const handleRequestNotificationPermission = async () => {
     if (!('Notification' in window)) {
       alert('Notifications API not available in this browser.');
@@ -334,12 +411,15 @@ export default function HomePage() {
     }
     setIsRequestingNotification(true);
     try {
+      // Trigger system notification permission prompt
       await Notification.requestPermission();
+      // Query the current permission state after the prompt
       const newStatus = await navigator.permissions.query({ name: 'notifications' });
       setPermissionsStatus(prevStatus => ({
         ...prevStatus,
         notifications: newStatus.state,
       }));
+      // Set up a listener for future permission changes
       newStatus.onchange = () => { 
         setPermissionsStatus(prev => ({ ...prev, notifications: newStatus.state }));
       };
@@ -414,7 +494,7 @@ export default function HomePage() {
   };
 
   const simulateDriverSearch = (attempt: number) => {
-    setSearchStatusMessage(`Searching for a ${selectedVehicleClass?.name} driver... Attempt ${attempt}`);
+    setSearchStatusMessage(`Finding ${selectedVehicleClass?.name}... Attempt ${attempt}`);
     setTimeout(() => {
       // Simulate finding a driver or not
       const driverFound = Math.random() > 0.33; // ~67% chance of finding a driver
@@ -429,7 +509,7 @@ export default function HomePage() {
           estimatedFare: selectedVehicleClass ? (tripDistance || 20) * selectedVehicleClass.pricePerKm : 20,
         };
         setDriverOffer(mockOffer);
-        setSearchStatusMessage(`Driver found for ${selectedVehicleClass?.name}! Preparing offer...`);
+        setSearchStatusMessage(`${selectedVehicleClass?.name} found! Preparing...`);
         setCurrentView(HomePageView.DRIVER_OFFER);
       } else {
         if (attempt < 3) {
@@ -437,7 +517,7 @@ export default function HomePage() {
           simulateDriverSearch(attempt + 1);
         } else {
           setIsSearching(false);
-          setSearchStatusMessage(`No ${selectedVehicleClass?.name} drivers found after 3 attempts. Please try again later or select a different vehicle.`);
+          setSearchStatusMessage(`No ${selectedVehicleClass?.name} available. Try again or select different vehicle.`);
           // Allow user to go back or try again
         }
       }
@@ -460,18 +540,18 @@ export default function HomePage() {
   const userLocationStatusText = useMemo(() => {
     if (locationError) return locationError;
     if (currentLocation) {
-      return `Your Current Location`;
+      return `Current Location`;
     }
-    if (permissionsStatus.geolocation === 'prompt') return 'Awaiting location permission...';
-    return 'Trying to fetch your location...';
+    if (permissionsStatus.geolocation === 'prompt') return 'Awaiting permission...';
+    return 'Fetching location...';
   }, [currentLocation, locationError, permissionsStatus.geolocation]);
 
   const manualPickupStatusText = useMemo(() => {
     if (manualPickupLocation) {
       const loc = L.latLng(manualPickupLocation);
-      return `Selected Pickup: Lat ${loc.lat.toFixed(4)}, Lng ${loc.lng.toFixed(4)}`;
+      return `Pickup: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`;
     }
-    return 'No manual pickup location selected.';
+    return 'No pickup selected.';
   }, [manualPickupLocation]);
 
   if (currentView === HomePageView.VEHICLE_SELECTION) {
@@ -491,7 +571,7 @@ export default function HomePage() {
     return (
       <div className="container animate-fade-in">
         <header className="flex justify-between items-center mb-md">
-          <h1 className="text-xl font-bold">Choose ride</h1>
+          <h1 className="text-xl font-bold">Choose Ride</h1>
           <button 
             onClick={() => setCurrentView(HomePageView.MAP_AND_DESTINATION)} 
             className="btn btn-outline btn-sm"
@@ -502,7 +582,7 @@ export default function HomePage() {
         
         {/* Trip Summary */}
         <div className="premium-trip-summary-card">
-          <h3 className="premium-section-title">Trip Summary</h3>
+          <h3 className="premium-section-title">Trip</h3>
           <div className="premium-route-details">
             <div className="premium-route-point">
               <div className="premium-route-icon pickup">
@@ -532,7 +612,7 @@ export default function HomePage() {
               <span className="material-icon">radar</span>
             </div>
             <div className="premium-parameter-text">
-              <h4 className="premium-parameter-label">Search Radius</h4>
+              <h4 className="premium-parameter-label">Radius</h4>
               <p className="premium-parameter-value">{(tripParams.radius/1000).toFixed(1)} km</p>
             </div>
           </div>
@@ -540,7 +620,7 @@ export default function HomePage() {
         
         {/* Vehicle Selection */}
         <section className="premium-section">
-          <h2 className="premium-section-title">Select Your Ride</h2>
+          <h2 className="premium-section-title">Ride Type</h2>
           <div className="premium-vehicle-list">
             {MOCK_VEHICLE_CLASSES.map((vc) => (
               <div 
@@ -559,11 +639,11 @@ export default function HomePage() {
                   </div>
                   <div className="premium-vehicle-info">
                     <h3 className="premium-vehicle-name">{vc.name}</h3>
-                    <p className="premium-vehicle-description">{vc.description}</p>
+                    <p className="premium-vehicle-description">{vc.description.split(' ').slice(0, 5).join(' ')}...</p>
                   </div>
                   <div className="premium-vehicle-price">
                     <span className="premium-price-amount">₹{(vc.pricePerKm * (tripDistance || 20)).toFixed(0)}</span>
-                    <span className="premium-price-unit">estimated total</span>
+                    <span className="premium-price-unit">total</span>
                   </div>
                   {selectedVehicleClass?.id === vc.id && (
                     <div className="premium-vehicle-selected-indicator">
@@ -580,7 +660,7 @@ export default function HomePage() {
             className={`premium-button ${!selectedVehicleClass ? 'premium-button-disabled' : ''} mt-md`}
           >
             <span className="premium-button-text">
-              Find Your Driver <span className="premium-button-icon material-icon">search</span>
+              Find <span className="premium-button-icon material-icon">search</span>
             </span>
           </button>
         </section>
@@ -594,8 +674,8 @@ export default function HomePage() {
         {/* Search Status */}
         <div className="premium-search-container">
           <header className="premium-search-header">
-            <h1 className="premium-search-title">Finding Your Ride</h1>
-            <p className="premium-search-subtitle">Connecting you with the best drivers</p>
+            <h1 className="premium-search-title">Finding</h1>
+            <p className="premium-search-subtitle">Connecting drivers</p>
           </header>
           
           <div className="premium-search-card">
@@ -608,7 +688,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <h3 className="premium-search-message">{searchStatusMessage}</h3>
-                <p className="premium-search-info">This usually takes less than a minute</p>
+                <p className="premium-search-info">Under a minute</p>
               </div>
             ) : searchAttempts >= 3 ? (
               <div className="premium-search-status failed">
@@ -616,7 +696,7 @@ export default function HomePage() {
                   <span className="material-icon">sentiment_dissatisfied</span>
                 </div>
                 <h3 className="premium-search-message">{searchStatusMessage}</h3>
-                <p className="premium-search-info">Try a different vehicle type or search area</p>
+                <p className="premium-search-info">Try different vehicle</p>
               </div>
             ) : (
               <div className="premium-search-status">
@@ -654,7 +734,7 @@ export default function HomePage() {
                 className="premium-btn premium-btn-secondary"
               >
                 <span className="material-icon">arrow_back</span>
-                <span>Choose Different Ride</span>
+                <span>Change Ride</span>
               </button>
               <button 
                 onClick={() => handleProceedToSearch()}
@@ -679,8 +759,8 @@ export default function HomePage() {
             <div className="premium-error-icon">
               <span className="material-icon">error_outline</span>
             </div>
-            <h2 className="premium-error-title">Something went wrong</h2>
-            <p className="premium-error-message">We couldn't process your ride offer</p>
+            <h2 className="premium-error-title">Error</h2>
+            <p className="premium-error-message">Offer not processed</p>
             <button 
               onClick={() => setCurrentView(HomePageView.VEHICLE_SELECTION)}
               className="premium-button mt-md"
@@ -700,7 +780,7 @@ export default function HomePage() {
             <span className="material-icon">check_circle</span>
           </div>
           <h1 className="premium-offer-title">Driver Found!</h1>
-          <p className="premium-offer-subtitle">Review and confirm your ride</p>
+          <p className="premium-offer-subtitle">Review ride</p>
         </header>
         
         {/* Driver Card */}
@@ -722,13 +802,13 @@ export default function HomePage() {
             </div>
             <div className="premium-eta-badge">
               <span className="material-icon">schedule</span>
-              <span>Arrives in {driverOffer.etaMinutes} min</span>
+              <span>{driverOffer.etaMinutes} min</span>
             </div>
           </div>
           
           {/* Trip Details */}
           <div className="premium-offer-trip-details">
-            <h3 className="premium-section-title">Trip Details</h3>
+            <h3 className="premium-section-title">Trip</h3>
             
             <div className="premium-route-details">
               <div className="premium-route-point">
@@ -760,7 +840,7 @@ export default function HomePage() {
                   <span className="material-icon">category</span>
                 </div>
                 <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Ride Type</h4>
+                  <h4 className="premium-trip-info-label">Type</h4>
                   <p className="premium-trip-info-value">{selectedVehicleClass.name}</p>
                 </div>
               </div>
@@ -804,7 +884,7 @@ export default function HomePage() {
               className="premium-button"
             >
               <span className="premium-button-text">
-                Confirm Ride <span className="premium-button-icon material-icon">check_circle</span>
+                Confirm <span className="premium-button-icon material-icon">check_circle</span>
               </span>
             </button>
           </div>
@@ -829,11 +909,11 @@ export default function HomePage() {
         </header>
         
         <div className="premium-p2p-container">
-          <p className="premium-p2p-subtitle">Pay once after completing multiple rides</p>
+          <p className="premium-p2p-subtitle">Pay after multiple rides</p>
           
           {/* Current Collection Status */}
           <div className="premium-p2p-card">
-            <h3 className="premium-p2p-section-title">Current Collection Status</h3>
+            <h3 className="premium-p2p-section-title">Collection Status</h3>
             
             <div className="premium-p2p-progress-container">
               <h2 className="premium-p2p-progress-text">
@@ -850,14 +930,14 @@ export default function HomePage() {
               </div>
               
               <p className="premium-p2p-progress-info">
-                {promise2PayData.currentCollection.ridesRemaining} more rides until collection (₹{(promise2PayData.currentCollection.totalAmount / 100).toFixed(2)} total)
+                {promise2PayData.currentCollection.ridesRemaining} rides left (₹{(promise2PayData.currentCollection.totalAmount / 100).toFixed(2)})
               </p>
             </div>
           </div>
           
           {/* Collection Options */}
           <div className="premium-p2p-card">
-            <h3 className="premium-p2p-section-title">Collection Options</h3>
+            <h3 className="premium-p2p-section-title">Options</h3>
             
             <div className="premium-p2p-option-container">
               <div className="premium-p2p-option">
@@ -865,9 +945,9 @@ export default function HomePage() {
                   <span className="material-icon">calculate</span>
                 </div>
                 <div className="premium-p2p-option-info">
-                  <h4 className="premium-p2p-option-title">Standard Collection (Active)</h4>
+                  <h4 className="premium-p2p-option-title">Standard</h4>
                   <p className="premium-p2p-option-desc">
-                    Collect after every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides (₹{(promise2PayData.collectionOptions.standard.ratePerRide / 100).toFixed(2)} per ride)
+                    Every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides (₹{(promise2PayData.collectionOptions.standard.ratePerRide / 100).toFixed(2)}/ride)
                   </p>
                 </div>
                 <div className="premium-p2p-option-toggle">
@@ -902,9 +982,9 @@ export default function HomePage() {
                   <span className="material-icon">calendar_month</span>
                 </div>
                 <div className="premium-p2p-option-info">
-                  <h4 className="premium-p2p-option-title">Monthly Collection</h4>
+                  <h4 className="premium-p2p-option-title">Monthly</h4>
                   <p className="premium-p2p-option-desc">
-                    Collect once a month regardless of ride count
+                    Once per month
                   </p>
                 </div>
                 <div className="premium-p2p-option-toggle">
@@ -938,7 +1018,7 @@ export default function HomePage() {
           
           {/* Collection History */}
           <div className="premium-p2p-card">
-            <h3 className="premium-p2p-section-title">Collection History</h3>
+            <h3 className="premium-p2p-section-title">History</h3>
             
             <div className="premium-p2p-history-container">
               {promise2PayData.collectionHistory.map(collection => {
@@ -947,7 +1027,7 @@ export default function HomePage() {
                   <div key={collection.id} className="premium-p2p-history-item">
                     <div className="premium-p2p-history-info">
                       <h4 className="premium-p2p-history-title">
-                        {isCurrentCollection ? 'Current Collection Progress' : 'Previous 20-Ride Collection'}
+                        {isCurrentCollection ? 'Current Progress' : 'Previous Collection'}
                       </h4>
                       <p className="premium-p2p-history-date">
                         {collection.startDate} - {collection.endDate} ({collection.rides} rides)
@@ -1482,7 +1562,7 @@ export default function HomePage() {
           className="premium-button mt-md"
         >
           <span className="premium-button-text">
-            Book Another Ride <span className="premium-button-icon material-icon">add_circle</span>
+            Book Again <span className="premium-button-icon material-icon">add_circle</span>
           </span>
         </button>
       </div>
@@ -1490,8 +1570,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container animate-fade-in">
-      {/* Permissions Manager - handles geolocation and notification permissions */}
+    <div className="container">
+      {/* For permissions management */}
       <PermissionsManager onPermissionsUpdate={handlePermissionsUpdate} />
       <MicroInteractions />
       
@@ -1541,63 +1621,60 @@ export default function HomePage() {
           )}
         </div>
       </header>
+      
+      {/* Permission toggles aligned with UI elements */}
+      {/* Permission toggles component - shows always-visible toggles for location and notifications */}
+      {/* Passes UI state flags to control opacity and passes callback for toggle interaction */}
+      <PermissionToggles 
+        isSelectingPickupMode={isSelectingPickupMode}
+        isMenuOpen={isMenuOpen}
+        onPermissionChange={handlePermissionToggle}
+      />
 
-      {showPermissionWarning && (
-        <div className="premium-alert mb-md animate-fade-in">
-          <div className="premium-alert-content">
-            <span className="premium-alert-icon material-icon">priority_high</span>
-            <div className="premium-alert-text">
-              <h4 className="premium-alert-title">Attention Required</h4>
-              <p className="premium-alert-message">
-                {permissionsStatus.geolocation === 'denied' && "Location services are required to provide you with accurate service."}
-                {(permissionsStatus.geolocation === 'prompt' && !currentLocation) && "Please allow location access when prompted for optimal service."}
-                {permissionsStatus.geolocation === 'denied' && permissionsStatus.notifications === 'denied' && <span className="premium-separator"></span>}
-                {permissionsStatus.notifications === 'denied' && "Enable notifications to receive important updates about your ride."}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showEnableNotificationsButton && (
-        <div className="premium-card mb-md animate-fade-in">
-          <div className="premium-card-content">
-            <div className="premium-card-row">
-              <span className="premium-card-icon material-icon">notifications</span>
-              <div className="premium-card-text">
-                <h3 className="premium-card-title">Stay Updated</h3>
-                <p className="premium-card-description">Receive real-time alerts about your ride status</p>
-              </div>
-              <button 
-                onClick={handleRequestNotificationPermission} 
-                disabled={isRequestingNotification || permissionsStatus.notifications === 'granted'}
-                className={`premium-btn ${(permissionsStatus.notifications === 'granted') ? 'premium-btn-success' : 'premium-btn-primary'}`}
-              >
-                {isRequestingNotification ? 'Processing...' : (permissionsStatus.notifications === 'granted' ? 'Enabled' : 'Enable Notifications')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Map Display */}
+      {/* SOURCE AND DESTINATION SECTION - RANK 1 */}
+      {/* Pickup Controls - Source */}
       <section className="premium-section">
-        <h3 className="premium-section-title">Current Location</h3>
-        <div className="premium-map-container">
-          <MapDisplay 
-            userPosition={currentLocation} 
-            pickupPosition={manualPickupLocation}
-            userLocationText={currentLocation ? (() => { const loc = L.latLng(currentLocation); return `${loc.lat.toFixed(6)}, ${loc.lng.toFixed(6)}`; })() : 'Awaiting location data...'} 
-            onMapClick={handleMapClick}
-            isSelectingPickup={isSelectingPickupMode}
-          />
-          
-          {/* Map Status Overlay */}
-          {isSelectingPickupMode && (
-            <div className="premium-map-overlay">
-              <span className="material-icon">touch_app</span> Select your pickup location
+        <h3 className="premium-section-title">Pickup</h3>
+        <div className="premium-card">
+          <div className="premium-card-content">
+            <div className="premium-option-group">
+              {/* Map Selection Button */}
+              <button 
+                onClick={toggleSelectPickupMode} 
+                className={`premium-option-btn ${isSelectingPickupMode ? 'premium-option-active' : ''}`}
+              >
+                <span className="premium-option-icon material-icon">{isSelectingPickupMode ? 'close' : 'map'}</span>
+                <div className="premium-option-text">
+                  <span className="premium-option-label">{isSelectingPickupMode ? 'Cancel' : 'Map Select'}</span>
+                </div>
+              </button>
+              
+              {/* Current Location Button */}
+              <button 
+                onClick={useCurrentLocationAsPickup} 
+                disabled={!currentLocation} 
+                className="premium-option-btn"
+              >
+                <span className="premium-option-icon material-icon">gps_fixed</span>
+                <div className="premium-option-text">
+                  <span className="premium-option-label">Current Location</span>
+                </div>
+              </button>
+              
+              {/* Clear Button - Only show if location is set */}
+              {manualPickupLocation && (
+                <button 
+                  onClick={clearManualPickup} 
+                  className="premium-option-btn premium-option-secondary"
+                >
+                  <span className="premium-option-icon material-icon">location_off</span>
+                  <div className="premium-option-text">
+                    <span className="premium-option-label">Clear</span>
+                  </div>
+                </button>
+              )}
             </div>
-          )}
+          </div>
         </div>
         
         {/* Location Status */}
@@ -1617,58 +1694,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pickup Controls */}
+      {/* Destination Input */}
       <section className="premium-section">
-        <h3 className="premium-section-title">Pickup Location</h3>
-        <div className="premium-card">
-          <div className="premium-card-content">
-            <div className="premium-option-group">
-              {/* Map Selection Button */}
-              <button 
-                onClick={toggleSelectPickupMode} 
-                className={`premium-option-btn ${isSelectingPickupMode ? 'premium-option-active' : ''}`}
-              >
-                <span className="premium-option-icon material-icon">{isSelectingPickupMode ? 'close' : 'map'}</span>
-                <div className="premium-option-text">
-                  <span className="premium-option-label">{isSelectingPickupMode ? 'Cancel Selection' : 'Select on Map'}</span>
-                  <span className="premium-option-desc">{isSelectingPickupMode ? 'Return to options' : 'Choose precise location'}</span>
-                </div>
-              </button>
-              
-              {/* Current Location Button */}
-              <button 
-                onClick={useCurrentLocationAsPickup} 
-                disabled={!currentLocation} 
-                className="premium-option-btn"
-              >
-                <span className="premium-option-icon material-icon">gps_fixed</span>
-                <div className="premium-option-text">
-                  <span className="premium-option-label">Use Current Location</span>
-                  <span className="premium-option-desc">Set pickup at your position</span>
-                </div>
-              </button>
-              
-              {/* Clear Button - Only show if location is set */}
-              {manualPickupLocation && (
-                <button 
-                  onClick={clearManualPickup} 
-                  className="premium-option-btn premium-option-secondary"
-                >
-                  <span className="premium-option-icon material-icon">location_off</span>
-                  <div className="premium-option-text">
-                    <span className="premium-option-label">Clear Location</span>
-                    <span className="premium-option-desc">Remove selected pickup point</span>
-                  </div>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Destination and Search Radius */}
-      <section className="premium-section">
-        {/* Destination Input */}
         <div className="premium-section-row">
           <h3 className="premium-section-title">Destination</h3>
           <div className="premium-card">
@@ -1681,48 +1708,10 @@ export default function HomePage() {
                     id="destination"
                     value={destinationInput} 
                     onChange={(e) => setDestinationInput(e.target.value)} 
-                    placeholder="Enter your destination"
+                    placeholder="Enter destination"
                     className="premium-input"
                   />
-                  <label htmlFor="destination" className="premium-input-label">Where would you like to go?</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search Radius */}
-        <div className="premium-section-row">
-          <h3 className="premium-section-title">Search Range</h3>
-          <div className="premium-card">
-            <div className="premium-card-content">
-              <div className="premium-slider-header">
-                <div className="premium-slider-info">
-                  <span className="premium-slider-icon material-icon">radar</span>
-                  <div className="premium-slider-text">
-                    <span className="premium-slider-label">Driver Search Radius</span>
-                    <span className="premium-slider-desc">Adjust the area to find available drivers</span>
-                  </div>
-                </div>
-                <div className="premium-slider-value">
-                  {(searchRadiusInput / 1000).toFixed(1)} km
-                </div>
-              </div>
-              
-              <div className="premium-slider-container">
-                <input
-                  type="range"
-                  id="searchRadius"
-                  min="500" 
-                  max="3000" 
-                  step="100" 
-                  value={searchRadiusInput} 
-                  onChange={(e) => setSearchRadiusInput(Number(e.target.value))} 
-                  className="premium-slider"
-                />
-                <div className="premium-slider-labels">
-                  <span>Nearby</span>
-                  <span>Extended Range</span>
+                  <label htmlFor="destination" className="premium-input-label">Destination</label>
                 </div>
               </div>
             </div>
@@ -1730,12 +1719,34 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* MAP DISPLAY - RANK 2 */}
+      <section className="premium-section">
+        <h3 className="premium-section-title">Map</h3>
+        <div className="premium-map-container">
+          <MapDisplay 
+            userPosition={currentLocation} 
+            pickupPosition={manualPickupLocation}
+            userLocationText={currentLocation ? (() => { const loc = L.latLng(currentLocation); return `${loc.lat.toFixed(6)}, ${loc.lng.toFixed(6)}`; })() : 'Awaiting location data...'} 
+            onMapClick={handleMapClick}
+            isSelectingPickup={isSelectingPickupMode}
+          />
+          
+          {/* Map Status Overlay */}
+          {isSelectingPickupMode && (
+            <div className="premium-map-overlay">
+              <span className="material-icon">touch_app</span> Tap to select
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* CONTINUE BUTTON - RANK 1 */}
       {/* Next Button Section */}
       <section className="premium-section">
         <button 
           onClick={handleProceedToVehicleSelection} 
           disabled={isNextDisabled}
-          className={`premium-button ${isNextDisabled ? 'premium-button-disabled' : ''} animate-fade-in`}
+          className={`premium-button ${isNextDisabled ? 'premium-button-disabled' : ''}`}
         >
           <span className="premium-button-text">
             Continue <span className="premium-button-icon material-icon">arrow_forward</span>
@@ -1743,6 +1754,44 @@ export default function HomePage() {
         </button>
       </section>
 
+      {/* PERMISSION WARNINGS - RANK 3 (CONTEXTUAL) */}
+      {showPermissionWarning && (
+        <div className="premium-alert mb-md animate-fade-in">
+          <div className="premium-alert-content">
+            <span className="premium-alert-icon material-icon">priority_high</span>
+            <div className="premium-alert-text">
+              <h4 className="premium-alert-title">Attention</h4>
+              <p className="premium-alert-message">
+                {permissionsStatus.geolocation === 'denied' && "Location access needed for service."}
+                {(permissionsStatus.geolocation === 'prompt' && !currentLocation) && "Allow location when prompted."}
+                {permissionsStatus.geolocation === 'denied' && permissionsStatus.notifications === 'denied' && <span className="premium-separator"></span>}
+                {permissionsStatus.notifications === 'denied' && "Enable for ride updates."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEnableNotificationsButton && (
+        <div className="premium-card mb-md animate-fade-in">
+          <div className="premium-card-content">
+            <div className="premium-card-row">
+              <span className="premium-card-icon material-icon">notifications</span>
+              <div className="premium-card-text">
+                <h3 className="premium-card-title">Stay Updated</h3>
+                <p className="premium-card-description">Get ride alerts</p>
+              </div>
+              <button 
+                onClick={handleRequestNotificationPermission} 
+                disabled={isRequestingNotification || permissionsStatus.notifications === 'granted'}
+                className={`premium-btn ${(permissionsStatus.notifications === 'granted') ? 'premium-btn-success' : 'premium-btn-primary'}`}
+              >
+                {isRequestingNotification ? 'Processing...' : (permissionsStatus.notifications === 'granted' ? 'Enabled' : 'Enable Notifications')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
