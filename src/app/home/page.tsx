@@ -1721,7 +1721,7 @@ export default function HomePage() {
       {/* MAP DISPLAY - RANK 2 */}
       <section className="premium-section">
         <h3 className="premium-section-title">Map</h3>
-        <div className="premium-map-container">
+        <div className={`premium-map-container ${isSelectingPickupMode ? 'selecting-mode' : ''}`}>
           <MapDisplay 
             userPosition={currentLocation} 
             pickupPosition={manualPickupLocation}
@@ -1733,7 +1733,11 @@ export default function HomePage() {
           {/* Map Status Overlay */}
           {isSelectingPickupMode && (
             <div className="premium-map-overlay">
-              <span className="material-icon">touch_app</span> Tap to select
+              <span className="material-icon">location_on</span>
+              <div className="premium-map-overlay-text">
+                <strong>Set Pickup Location</strong>
+                <p>Tap on map to select</p>
+              </div>
             </div>
           )}
         </div>

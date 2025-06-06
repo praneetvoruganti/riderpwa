@@ -1,0 +1,216 @@
+/* Map display styles */
+
+/* Custom marker styling */
+.custom-marker-icon {
+  background: none !important; /* Remove default background */
+  border: none !important;    /* Remove default border */
+  z-index: 1000 !important;  /* Ensure markers are on top */
+}
+
+.custom-marker-icon svg {
+  filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.4));
+  transition: all 0.2s ease;
+}
+
+.custom-marker-icon:hover svg {
+  transform: scale(1.1);
+}
+
+/* Map legend styling */
+.map-legend {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  font-size: 11px;
+  line-height: 1.3;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.legend-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.legend-icon.blue {
+  background-color: #3498db;
+  border: 1px solid white;
+}
+
+.legend-icon.red {
+  background-color: #e74c3c;
+  border: 1px solid white;
+}
+
+/* Custom zoom controls */
+.custom-zoom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+.zoom-btn {
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  margin: 3px 0;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.zoom-btn:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.zoom-btn:active {
+  background-color: #e0e0e0;
+  transform: scale(0.95);
+}
+
+.reset-view {
+  font-size: 18px;
+}
+
+/* Enhance popup styles */
+.leaflet-popup-content-wrapper {
+  border-radius: 6px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Make the map container more compact and usable */
+.premium-map-container {
+  height: 300px;  /* Reduce height to make it more manageable */
+  margin-bottom: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  position: relative;
+  touch-action: pan-y pinch-zoom; /* Enable touch gestures explicitly */
+}
+
+/* Fix scrolling for the map */
+.leaflet-container {
+  touch-action: pan-x pan-y pinch-zoom;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
+}
+
+/* Selection mode styles */
+.premium-map.selection-mode {
+  cursor: crosshair;
+}
+
+/* Map overlay styles */
+.premium-map-overlay {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 90%;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 20px;
+  padding: 8px 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.premium-map-overlay .material-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: #ffffff;
+}
+
+.premium-map-overlay-text {
+  flex: 1;
+}
+
+.premium-map-overlay-text strong {
+  display: block;
+  margin-bottom: 0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.premium-map-overlay-text p {
+  margin: 0;
+  font-size: 12px;
+  color: #dddddd;
+  white-space: nowrap; 
+  line-height: 1.2;
+}
+
+/* Map attribution */
+.map-attribution {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  z-index: 999;
+  font-size: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.map-attribution a {
+  color: #0078A8;
+  text-decoration: none;
+}
+
+/* Add pinpoint indicator at center when selecting location */
+.premium-map-container.selecting-mode::after {
+  content: '+';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  color: #e74c3c;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  pointer-events: none;
+  z-index: 1000;
+}
