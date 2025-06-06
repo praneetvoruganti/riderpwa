@@ -15,6 +15,7 @@ import '../styles/permissionToggles.css';
 import '@/app/styles/mapDisplay.css';
 import '@/app/styles/vehicleSelection.css';
 import '@/app/styles/driverOffer.css';
+import '@/app/styles/compactScreens.css';
 
 const MapDisplay = dynamic(() => import('@/app/components/MapDisplay'), {
   ssr: false,
@@ -877,152 +878,147 @@ export default function HomePage() {
   if (currentView === HomePageView.PROMISE2PAY) {
     return (
       <div className="container animate-fade-in">
-        {/* Header */}
-        <header className="premium-header">
+        {/* Compact Header with Back Button */}
+        <div className="compact-header">
           <button 
             onClick={() => setCurrentView(HomePageView.MAP_AND_DESTINATION)}
-            className="premium-icon-btn" 
+            className="back-button" 
             aria-label="Back"
           >
             <span className="material-icon">arrow_back</span>
           </button>
-          <h1 className="premium-page-title">Promise2Pay</h1>
-        </header>
+          <h1 className="compact-title">Promise2Pay</h1>
+          <div className="header-spacer"></div>
+        </div>
         
-        <div className="premium-p2p-container">
-          <p className="premium-p2p-subtitle">Pay after multiple rides</p>
-          
-          {/* Current Collection Status */}
-          <div className="premium-p2p-card">
-            <h3 className="premium-p2p-section-title">Collection Status</h3>
-            
-            <div className="premium-p2p-progress-container">
-              <h2 className="premium-p2p-progress-text">
+        <div className="compact-container">
+          {/* Progress Card */}
+          <div className="compact-card">
+            <div className="progress-header">
+              <div className="progress-title">Current Collection</div>
+              <div className="progress-value">
                 {promise2PayData.currentCollection.ridesCompleted} / {promise2PayData.currentCollection.totalRides} rides
-              </h2>
-              
-              <div className="premium-p2p-progress-bar">
-                <div 
-                  className="premium-p2p-progress-fill" 
-                  style={{
-                    width: `${(promise2PayData.currentCollection.ridesCompleted / promise2PayData.currentCollection.totalRides) * 100}%`
+              </div>
+            </div>
+            
+            <div className="progress-bar-container">
+              <div 
+                className="progress-bar-fill" 
+                style={{
+                  width: `${(promise2PayData.currentCollection.ridesCompleted / promise2PayData.currentCollection.totalRides) * 100}%`
+                }}
+              ></div>
+            </div>
+            
+            <p className="progress-info">
+              <span className="bold">{promise2PayData.currentCollection.ridesRemaining} rides left</span> • ₹0.50 per ride
+            </p>
+          </div>
+          
+          {/* Options Card */}
+          <div className="compact-card">
+            <div className="card-section-title">Payment Options</div>
+            
+            {/* Standard Option */}
+            <div className="option-row">
+              <div className="option-icon">
+                <span className="material-icon">calculate</span>
+              </div>
+              <div className="option-info">
+                <div className="option-title">Standard</div>
+                <div className="option-desc">
+                  Every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides • ₹0.50 per ride
+                </div>
+              </div>
+              <label className="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  checked={promise2PayData.collectionOptions.standard.active} 
+                  onChange={() => {
+                    setPromise2PayData(prev => ({
+                      ...prev,
+                      collectionOptions: {
+                        ...prev.collectionOptions,
+                        standard: {
+                          ...prev.collectionOptions.standard,
+                          active: true
+                        },
+                        monthly: {
+                          ...prev.collectionOptions.monthly,
+                          active: false
+                        }
+                      }
+                    }));
                   }}
-                ></div>
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+            
+            {/* Monthly Option */}
+            <div className="option-row">
+              <div className="option-icon">
+                <span className="material-icon">calendar_month</span>
               </div>
-              
-              <p className="premium-p2p-progress-info">
-                {promise2PayData.currentCollection.ridesRemaining} rides left (Government mandated fares)
-              </p>
+              <div className="option-info">
+                <div className="option-title">Monthly</div>
+                <div className="option-desc">
+                  Once per month
+                </div>
+              </div>
+              <label className="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  checked={promise2PayData.collectionOptions.monthly.active} 
+                  onChange={() => {
+                    setPromise2PayData(prev => ({
+                      ...prev,
+                      collectionOptions: {
+                        ...prev.collectionOptions,
+                        standard: {
+                          ...prev.collectionOptions.standard,
+                          active: false
+                        },
+                        monthly: {
+                          ...prev.collectionOptions.monthly,
+                          active: true
+                        }
+                      }
+                    }));
+                  }}
+                />
+                <span className="toggle-slider"></span>
+              </label>
             </div>
           </div>
           
-          {/* Collection Options */}
-          <div className="premium-p2p-card">
-            <h3 className="premium-p2p-section-title">Options</h3>
+          {/* History Card */}
+          <div className="compact-card">
+            <div className="card-section-title">Collection History</div>
             
-            <div className="premium-p2p-option-container">
-              <div className="premium-p2p-option">
-                <div className="premium-p2p-option-icon">
-                  <span className="material-icon">calculate</span>
-                </div>
-                <div className="premium-p2p-option-info">
-                  <h4 className="premium-p2p-option-title">Standard</h4>
-                  <p className="premium-p2p-option-desc">
-                    Every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides (Government mandated fares)
-                  </p>
-                </div>
-                <div className="premium-p2p-option-toggle">
-                  <label className="premium-toggle">
-                    <input 
-                      type="checkbox" 
-                      checked={promise2PayData.collectionOptions.standard.active} 
-                      onChange={() => {
-                        setPromise2PayData(prev => ({
-                          ...prev,
-                          collectionOptions: {
-                            ...prev.collectionOptions,
-                            standard: {
-                              ...prev.collectionOptions.standard,
-                              active: true
-                            },
-                            monthly: {
-                              ...prev.collectionOptions.monthly,
-                              active: false
-                            }
-                          }
-                        }));
-                      }}
-                    />
-                    <span className="premium-toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-              
-              <div className="premium-p2p-option">
-                <div className="premium-p2p-option-icon">
-                  <span className="material-icon">calendar_month</span>
-                </div>
-                <div className="premium-p2p-option-info">
-                  <h4 className="premium-p2p-option-title">Monthly</h4>
-                  <p className="premium-p2p-option-desc">
-                    Once per month
-                  </p>
-                </div>
-                <div className="premium-p2p-option-toggle">
-                  <label className="premium-toggle">
-                    <input 
-                      type="checkbox" 
-                      checked={promise2PayData.collectionOptions.monthly.active} 
-                      onChange={() => {
-                        setPromise2PayData(prev => ({
-                          ...prev,
-                          collectionOptions: {
-                            ...prev.collectionOptions,
-                            standard: {
-                              ...prev.collectionOptions.standard,
-                              active: false
-                            },
-                            monthly: {
-                              ...prev.collectionOptions.monthly,
-                              active: true
-                            }
-                          }
-                        }));
-                      }}
-                    />
-                    <span className="premium-toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Collection History */}
-          <div className="premium-p2p-card">
-            <h3 className="premium-p2p-section-title">History</h3>
-            
-            <div className="premium-p2p-history-container">
+            <div className="history-list">
               {promise2PayData.collectionHistory.map(collection => {
                 const isCurrentCollection = collection.status === 'in-progress';
                 return (
-                  <div key={collection.id} className="premium-p2p-history-item">
-                    <div className="premium-p2p-history-info">
-                      <h4 className="premium-p2p-history-title">
+                  <div key={collection.id} className={`history-item ${isCurrentCollection ? 'current' : ''}`}>
+                    <div className="history-status-indicator"></div>
+                    <div className="history-content">
+                      <div className="history-title">
                         {isCurrentCollection ? 'Current Progress' : 'Previous Collection'}
-                      </h4>
-                      <p className="premium-p2p-history-date">
-                        {collection.startDate} - {collection.endDate} ({collection.rides} rides)
-                      </p>
-                      <p className="premium-p2p-history-amount">
-                        Government mandated fares
-                      </p>
-                      {isCurrentCollection && (
-                        <p className="premium-p2p-history-estimate">
-                          Estimated collection in {promise2PayData.currentCollection.ridesRemaining} more rides
-                          <br />
-                          Government mandated fares
-                        </p>
-                      )}
+                      </div>
+                      <div className="history-details">
+                        <div className="history-date">
+                          {collection.startDate} - {collection.endDate} • {collection.rides} rides
+                        </div>
+                        <div className="history-amount">
+                          ₹0.50 per ride
+                        </div>
+                        {isCurrentCollection && (
+                          <div className="history-estimate">
+                            Due in {promise2PayData.currentCollection.ridesRemaining} more rides
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -1030,9 +1026,10 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Pay Now Button */}
-          <button className="premium-p2p-pay-button">
-            Pay Now
+          {/* Action Button */}
+          <button className="action-button">
+            <span className="material-icon">payments</span>
+            <span>Pay Now</span>
           </button>
         </div>
       </div>
@@ -1042,45 +1039,45 @@ export default function HomePage() {
   if (currentView === HomePageView.PAST_RIDES) {
     return (
       <div className="container animate-fade-in">
-        {/* Header */}
-        <header className="premium-header">
+        {/* Compact Header */}
+        <div className="compact-header">
           <button 
             onClick={() => setCurrentView(HomePageView.MAP_AND_DESTINATION)}
-            className="premium-icon-btn" 
+            className="back-button" 
             aria-label="Back"
           >
             <span className="material-icon">arrow_back</span>
           </button>
-          <h1 className="premium-page-title">Past Rides</h1>
-        </header>
+          <h1 className="compact-title">Past Rides</h1>
+          <div className="header-spacer"></div>
+        </div>
         
         {/* Past Rides List */}
-        <div className="premium-past-rides-container">
+        <div className="rides-container">
           {pastRides.length === 0 ? (
-            <div className="premium-empty-state">
-              <div className="premium-empty-icon">
+            <div className="empty-state">
+              <div className="empty-icon">
                 <span className="material-icon">directions_car_off</span>
               </div>
-              <h2 className="premium-empty-title">No rides yet</h2>
-              <p className="premium-empty-message">Your past rides will appear here</p>
+              <h2 className="empty-title">No rides yet</h2>
+              <p className="empty-message">Your past rides will appear here</p>
               <button 
                 onClick={() => setCurrentView(HomePageView.MAP_AND_DESTINATION)}
-                className="premium-button mt-md"
+                className="action-button"
               >
-                <span className="premium-button-text">
-                  Book a Ride <span className="premium-button-icon material-icon">add_circle</span>
-                </span>
+                <span className="material-icon">add_circle</span>
+                <span>Book a Ride</span>
               </button>
             </div>
           ) : (
             <>
-              <div className="premium-ride-filters">
-                <button className="premium-filter-btn premium-filter-active">All</button>
-                <button className="premium-filter-btn">Completed</button>
-                <button className="premium-filter-btn">Cancelled</button>
+              <div className="filter-tabs">
+                <button className="filter-tab active">All</button>
+                <button className="filter-tab">Completed</button>
+                <button className="filter-tab">Cancelled</button>
               </div>
               
-              <div className="premium-rides-list">
+              <div className="ride-cards">
                 {pastRides.map(ride => {
                   const rideDate = new Date(ride.date);
                   const formattedDate = rideDate.toLocaleDateString('en-IN', {
@@ -1095,70 +1092,70 @@ export default function HomePage() {
                   });
                   
                   return (
-                    <div key={ride.id} className={`premium-ride-card ${ride.status === 'cancelled' ? 'premium-ride-cancelled' : ''}`}>
-                      <div className="premium-ride-header">
-                        <div className="premium-ride-date">
+                    <div key={ride.id} className={`ride-card ${ride.status === 'cancelled' ? 'cancelled' : ''}`}>
+                      {/* Card Header with Date/Time and Status */}
+                      <div className="ride-header">
+                        <div className="ride-datetime">
                           <span className="material-icon">event</span>
                           <span>{formattedDate} • {formattedTime}</span>
                         </div>
-                        <div className={`premium-ride-status ${ride.status === 'completed' ? 'premium-status-completed' : 'premium-status-cancelled'}`}>
-                          <span className="material-icon">
-                            {ride.status === 'completed' ? 'check_circle' : 'cancel'}
-                          </span>
-                          <span>{ride.status === 'completed' ? 'Completed' : 'Cancelled'}</span>
+                        <div className={`ride-status ${ride.status.toLowerCase()}`}>
+                          {ride.status === 'completed' ? 'Completed' : 'Cancelled'}
                         </div>
                       </div>
                       
-                      <div className="premium-ride-route">
-                        <div className="premium-route-point">
-                          <div className="premium-route-icon pickup">
-                            <span className="material-icon">my_location</span>
+                      {/* Compact Route */}
+                      <div className="ride-route">
+                        <div className="route-point">
+                          <div className="point-marker pickup"></div>
+                          <div className="point-text">{ride.pickup}</div>
+                        </div>
+                        <div className="route-divider"></div>
+                        <div className="route-point">
+                          <div className="point-marker dropoff"></div>
+                          <div className="point-text">{ride.destination}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Trip Info Row */}
+                      <div className="ride-info-row">
+                        <div className="driver-info">
+                          <div className="driver-avatar">
+                            <span className="material-icon">person</span>
                           </div>
-                          <div className="premium-route-text">
-                            <h4 className="premium-route-label">Pickup</h4>
-                            <p className="premium-route-value">{ride.pickup}</p>
-                          </div>
+                          <span className="driver-name">{ride.driverName}</span>
                         </div>
                         
-                        <div className="premium-route-connector"></div>
-                        
-                        <div className="premium-route-point">
-                          <div className="premium-route-icon destination">
-                            <span className="material-icon">place</span>
+                        <div className="ride-details">
+                          <div className="detail-item">
+                            <span className="material-icon">payments</span>
+                            <span className="detail-text">₹{ride.fare} <small>(Govt. mandated fares)</small></span>
                           </div>
-                          <div className="premium-route-text">
-                            <h4 className="premium-route-label">Destination</h4>
-                            <p className="premium-route-value">{ride.destination}</p>
+                          <div className="detail-item">
+                            <span className="material-icon">directions_car</span>
+                            <span className="detail-text">{ride.vehicleType}</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="material-icon">straighten</span>
+                            <span className="detail-text">{ride.distance} km</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="premium-ride-details">
-                        <div className="premium-ride-info">
-                          <span className="premium-offer-icon material-icon" style={{ fontSize: 32, color: '#4CAF50' }}></span>
-                          <span className="premium-info-text">{ride.driverName}</span>
-                        </div>
-                        <div className="premium-ride-info">
-                          <span className="premium-info-icon material-icon">directions_car</span>
-                          <span className="premium-info-text">{ride.vehicleType}</span>
-                        </div>
-                        <div className="premium-ride-info">
-                          <span className="premium-info-icon material-icon">route</span>
-                          <span className="premium-info-text">{ride.distance} km</span>
-                        </div>
-                        <div className="premium-ride-info">
-                          <span className="premium-info-icon material-icon">payments</span>
-                          <span className="premium-info-text">Government mandated fares</span>
-                        </div>
-                      </div>
-                      
-                      <div className="premium-ride-actions">
-                        <button className="premium-btn premium-btn-secondary">
+                      {/* Action Buttons */}
+                      <div className="ride-actions">
+                        <button className="action-btn secondary">
                           <span className="material-icon">receipt_long</span>
-                          <span>View Receipt</span>
+                          <span>Receipt</span>
                         </button>
-                        <button className="premium-btn premium-btn-primary">
-                          <span className="material-icon">replay</span>
+                        
+                        <button className="action-btn secondary">
+                          <span className="material-icon">support_agent</span>
+                          <span>Help</span>
+                        </button>
+                        
+                        <button className="action-btn primary">
+                          <span className="material-icon">repeat</span>
                           <span>Book Again</span>
                         </button>
                       </div>
@@ -1613,7 +1610,7 @@ export default function HomePage() {
               >
                 <span className="premium-option-icon material-icon">{isSelectingPickupMode ? 'close' : 'map'}</span>
                 <div className="premium-option-text">
-                  <span className="premium-option-label">{isSelectingPickupMode ? 'Cancel' : 'Map Select'}</span>
+                  <span className="premium-option-label">{isSelectingPickupMode ? 'Cancel' : 'Select On Map'}</span>
                 </div>
               </button>
               

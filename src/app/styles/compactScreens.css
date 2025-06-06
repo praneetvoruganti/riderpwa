@@ -1,0 +1,547 @@
+/* Compact UI Styles for Promise2Pay and Past Rides */
+
+/* Shared Header Components */
+.compact-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.compact-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.header-spacer {
+  width: 40px;
+}
+
+/* Compact Container */
+.compact-container {
+  padding: 16px;
+}
+
+/* Card Components */
+.compact-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+/* Progress Components for Promise2Pay */
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.progress-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.progress-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.progress-bar-container {
+  height: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-info {
+  font-size: 12px;
+  color: #666;
+  margin: 6px 0 0;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+/* Options UI for Promise2Pay */
+.option-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.option-row:last-child {
+  border-bottom: none;
+}
+
+.option-icon {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.option-icon .material-icon {
+  font-size: 18px;
+  color: #4CAF50;
+}
+
+.option-info {
+  flex: 1;
+}
+
+.option-title {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.option-desc {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 12px;
+  transition: .4s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+
+input:checked + .toggle-slider {
+  background-color: #4CAF50;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+
+/* History List */
+.history-list {
+  margin-top: 10px;
+}
+
+.history-item {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin-right: 12px;
+  margin-top: 5px;
+}
+
+.history-item.current .history-status-indicator {
+  background-color: #4CAF50;
+}
+
+.history-content {
+  flex: 1;
+}
+
+.history-title {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.history-details {
+  font-size: 12px;
+}
+
+.history-date {
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.history-amount {
+  color: #333;
+  font-weight: 500;
+}
+
+.history-estimate {
+  color: #4CAF50;
+  margin-top: 4px;
+}
+
+/* Action Button */
+.action-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.action-button:hover {
+  background-color: #3d8b40;
+}
+
+.action-button .material-icon {
+  font-size: 18px;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-icon .material-icon {
+  font-size: 30px;
+  color: #888;
+}
+
+.empty-title {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.empty-message {
+  color: #666;
+  margin: 0 0 20px;
+}
+
+/* Past Rides Styles */
+.rides-container {
+  padding: 16px;
+}
+
+.filter-tabs {
+  display: flex;
+  margin-bottom: 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.filter-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+
+.filter-tab.active {
+  background-color: #f7f7f7;
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.ride-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ride-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.ride-card.cancelled {
+  border-left: 3px solid #F44336;
+}
+
+.ride-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ride-datetime {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.ride-datetime .material-icon {
+  font-size: 16px;
+  color: #555;
+}
+
+.ride-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.ride-status.completed {
+  color: #4CAF50;
+  background-color: rgba(76,175,80,0.1);
+}
+
+.ride-status.cancelled {
+  color: #F44336;
+  background-color: rgba(244,67,54,0.1);
+}
+
+.ride-route {
+  padding: 12px 16px;
+  background: white;
+}
+
+.route-point {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.point-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 12px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.point-marker.pickup {
+  background-color: #4CAF50;
+}
+
+.point-marker.dropoff {
+  background-color: #F44336;
+}
+
+.point-text {
+  font-size: 13px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100% - 22px);
+}
+
+.route-divider {
+  width: 1px;
+  height: 14px;
+  background-color: #ddd;
+  margin: 2px 0 2px 5px;
+}
+
+.ride-info-row {
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.driver-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.driver-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.driver-avatar .material-icon {
+  font-size: 20px;
+  color: #888;
+}
+
+.driver-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ride-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.detail-item .material-icon {
+  font-size: 16px;
+  color: #666;
+}
+
+.detail-text small {
+  font-size: 10px;
+  color: #888;
+}
+
+.ride-actions {
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.action-btn {
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.action-btn.secondary {
+  background-color: #f5f5f5;
+  color: #555;
+  border: 1px solid #e0e0e0;
+}
+
+.action-btn.primary {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.action-btn .material-icon {
+  font-size: 16px;
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+  .rides-container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  
+  .compact-container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}
