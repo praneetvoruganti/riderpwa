@@ -1,0 +1,173 @@
+/* YABNA Landing Page Styles */
+
+/* Container for the entire landing page */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Ensure it fits in one viewport */
+  padding: 24px 16px;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Header Section - Top 40% */
+.landing-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 32px;
+  height: 40%;
+}
+
+.landing-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #333;
+}
+
+.landing-subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  color: #666;
+  max-width: 300px;
+  line-height: 1.4;
+}
+
+/* Main Cards Section */
+.landing-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: auto;
+}
+
+.landing-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 160px;
+  min-height: 48px; /* Minimum touch target size */
+}
+
+.landing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.rider-card {
+  border-left: 4px solid #4CAF50;
+}
+
+.driver-card {
+  border-left: 4px solid #2196F3;
+}
+
+.card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+
+.rider-icon {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.rider-icon .material-icon {
+  color: #4CAF50;
+}
+
+.driver-icon {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.driver-icon .material-icon {
+  color: #2196F3;
+}
+
+.material-icon {
+  font-size: 24px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.card-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Footer Section with FAQ */
+.landing-footer {
+  padding: 16px 0;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.faq-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.faq-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 650px) {
+  .card-description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  
+  .landing-card {
+    height: 140px;
+    padding: 18px;
+  }
+  
+  .landing-subtitle {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .landing-container {
+    padding: 32px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .landing-cards {
+    flex-direction: row;
+  }
+  
+  .landing-card {
+    flex: 1;
+  }
+}

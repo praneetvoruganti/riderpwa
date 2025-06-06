@@ -1129,7 +1129,7 @@ export default function HomePage() {
                         <div className="ride-details">
                           <div className="detail-item">
                             <span className="material-icon">payments</span>
-                            <span className="detail-text">₹{ride.fare} <small>(Govt. mandated fares)</small></span>
+                            <span className="detail-text">₹(Govt. mandated fares)</span>
                           </div>
                           <div className="detail-item">
                             <span className="material-icon">directions_car</span>
@@ -1143,7 +1143,7 @@ export default function HomePage() {
                       </div>
                       
                       {/* Action Buttons */}
-                      <div className="ride-actions">
+                      {/* <div className="ride-actions">
                         <button className="action-btn secondary">
                           <span className="material-icon">receipt_long</span>
                           <span>Receipt</span>
@@ -1158,7 +1158,7 @@ export default function HomePage() {
                           <span className="material-icon">repeat</span>
                           <span>Book Again</span>
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   );
                 })}
