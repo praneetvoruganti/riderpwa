@@ -506,7 +506,7 @@ export default function HomePage() {
           vehicleModel: `${selectedVehicleClass?.name || 'Standard'} - Toyota Camry`,
           vehicleLicensePlate: 'XYZ 123',
           etaMinutes: Math.floor(Math.random() * 10) + 5, // 5-14 minutes
-          estimatedFare: selectedVehicleClass ? (tripDistance || 20) * selectedVehicleClass.pricePerKm : 20,
+          estimatedFare: 0, // Government mandated fares
         };
         setDriverOffer(mockOffer);
         setSearchStatusMessage(`${selectedVehicleClass?.name} found! Preparing...`);
@@ -642,8 +642,7 @@ export default function HomePage() {
                     <p className="premium-vehicle-description">{vc.description.split(' ').slice(0, 5).join(' ')}...</p>
                   </div>
                   <div className="premium-vehicle-price">
-                    <span className="premium-price-amount">₹{(vc.pricePerKm * (tripDistance || 20)).toFixed(0)}</span>
-                    <span className="premium-price-unit">total</span>
+                    <span className="premium-price-amount">Government mandated fares</span>
                   </div>
                   {selectedVehicleClass?.id === vc.id && (
                     <div className="premium-vehicle-selected-indicator">
@@ -721,7 +720,7 @@ export default function HomePage() {
               </div>
               <div className="premium-selected-vehicle-info">
                 <h3 className="premium-selected-vehicle-name">{selectedVehicleClass.name}</h3>
-                <p className="premium-selected-vehicle-price">₹{(selectedVehicleClass.pricePerKm * (tripDistance || 20)).toFixed(0)} estimated total</p>
+                <p className="premium-selected-vehicle-price">Government mandated fares</p>
               </div>
             </div>
           )}
@@ -860,8 +859,8 @@ export default function HomePage() {
                   <span className="material-icon">payments</span>
                 </div>
                 <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Estimated Fare</h4>
-                  <p className="premium-trip-info-value">₹{driverOffer.estimatedFare.toFixed(0)}</p>
+                  <h4 className="premium-trip-info-label">Fare</h4>
+                  <p className="premium-trip-info-value">Government mandated fares</p>
                 </div>
               </div>
             </div>
@@ -930,7 +929,7 @@ export default function HomePage() {
               </div>
               
               <p className="premium-p2p-progress-info">
-                {promise2PayData.currentCollection.ridesRemaining} rides left (₹{(promise2PayData.currentCollection.totalAmount / 100).toFixed(2)})
+                {promise2PayData.currentCollection.ridesRemaining} rides left (Government mandated fares)
               </p>
             </div>
           </div>
@@ -947,7 +946,7 @@ export default function HomePage() {
                 <div className="premium-p2p-option-info">
                   <h4 className="premium-p2p-option-title">Standard</h4>
                   <p className="premium-p2p-option-desc">
-                    Every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides (₹{(promise2PayData.collectionOptions.standard.ratePerRide / 100).toFixed(2)}/ride)
+                    Every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides (Government mandated fares)
                   </p>
                 </div>
                 <div className="premium-p2p-option-toggle">
@@ -1033,13 +1032,13 @@ export default function HomePage() {
                         {collection.startDate} - {collection.endDate} ({collection.rides} rides)
                       </p>
                       <p className="premium-p2p-history-amount">
-                        ₹{(collection.amount / 100).toFixed(2)}
+                        Government mandated fares
                       </p>
                       {isCurrentCollection && (
                         <p className="premium-p2p-history-estimate">
                           Estimated collection in {promise2PayData.currentCollection.ridesRemaining} more rides
                           <br />
-                          ₹{(promise2PayData.currentCollection.totalAmount / 100).toFixed(2)}
+                          Government mandated fares
                         </p>
                       )}
                     </div>
@@ -1167,7 +1166,7 @@ export default function HomePage() {
                         </div>
                         <div className="premium-ride-info">
                           <span className="premium-info-icon material-icon">payments</span>
-                          <span className="premium-info-text">₹{ride.fare}</span>
+                          <span className="premium-info-text">Government mandated fares</span>
                         </div>
                       </div>
                       
@@ -1494,10 +1493,10 @@ export default function HomePage() {
                 <div className="premium-trip-info-icon">
                   <span className="material-icon">payments</span>
                 </div>
-                <div className="premium-trip-info-content">
-                  <h4 className="premium-trip-info-label">Estimated Fare</h4>
-                  <p className="premium-trip-info-value">₹{driverOffer.estimatedFare.toFixed(0)}</p>
-                </div>
+                <div className="premium-fare-detail">
+                <span className="premium-fare-label">Fare</span>
+                <span className="premium-fare-value">Government mandated fares</span>
+              </div>
               </div>
               
               <div className="premium-trip-info-card">
