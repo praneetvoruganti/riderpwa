@@ -2,90 +2,127 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import './styles/landing.css';
 
 export default function YabnaLanding() {
   const router = useRouter();
 
   return (
-    <div className="landing-container">
-      {/* Top Section with Headline */}
-      <section className="landing-header">
-        <h1 className="landing-title">Y A B N A <span className="brand-accent">.</span></h1>
-
-        <h2 className="landing-headline">Yet Another Booking Non App</h2>
-        <p className="landing-subtitle">We might not find you a ride every time. But when we do, you pay directly to the driver—no markup.</p>
-      </section>
-
-      {/* Main Cards Section */}
-      <section className="landing-cards">
-        {/* Rider Card */}
-        <button 
-          className="landing-card rider-card" 
-          onClick={() => router.push('/home')}
-          aria-label="Rider options"
-        >
-          <div className="card-icon rider-icon">
-            <span className="material-icon">person_pin_circle</span>
-          </div>
-          <h3 className="card-title">Ride</h3>
-          
-          <div className="card-benefits">
-            <div className="benefit-item">
-              <span className="material-icon">payments</span>
-              <span>Direct payment to driver</span>
-            </div>
-            <div className="benefit-item">
-              <span className="material-icon">verified</span>
-              <span>Government mandated fares only</span>
-            </div>
-            <div className="benefit-item">
-              <span className="material-icon">currency_rupee</span>
-              <span>Only ₹0.50 per ride, pay later</span>
-            </div>
-            <div className="benefit-item">
-              <span className="material-icon">language</span>
-              <span>No app installation needed</span>
+    <div className="landing-page">
+      <div className="landing-container">
+        {/* Top Section with Headline and Brand */}
+        <section className="landing-header">
+          <div className="brand-container">
+            <h1 className="landing-title">Y A B N A <span className="brand-accent">.</span></h1>
+            <div className="tagline-box">
+              <h2 className="landing-headline">Yet Another Booking Non App</h2>
+              <p className="landing-subtitle">Let's be real—we won't always find you a ride. But when we do, you pay straight to the driver (because why pay extra?).</p>
             </div>
           </div>
-        </button>
+        </section>
 
-        {/* Driver Card */}
-        <button 
-          className="landing-card driver-card" 
-          onClick={() => router.push('/driver')}
-          aria-label="Driver options"
-        >
-          <div className="card-icon driver-icon">
-            <span className="material-icon">local_taxi</span>
-          </div>
-          <h3 className="card-title">Drive</h3>
-          
-          <div className="card-benefits">
-            <div className="benefit-item">
-              <span className="material-icon">account_balance_wallet</span>
-              <span>Keep your full fare</span>
+        {/* Main Cards Section */}
+        <section className="landing-cards">
+          {/* Rider Card */}
+          <button 
+            className="landing-card rider-card" 
+            onClick={() => router.push('/home')}
+            aria-label="Rider options"
+          >
+            <div className="card-header">
+              <div className="card-icon rider-icon">
+                <span className="material-icons">directions_car</span>
+              </div>
+              <h3 className="card-title">Ride</h3>
             </div>
-            <div className="benefit-item">
-              <span className="material-icon">visibility</span>
-              <span>Full trip transparency</span>
+            
+            <div className="card-benefits">
+              <div className="benefit-item">
+                <span className="material-icons">payments</span>
+                <div className="benefit-text">
+                  <strong>Pay the driver, not us</strong>
+                  <span className="benefit-subtext">(We're bad middlemen anyway)</span>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <span className="material-icons">verified</span>
+                <div className="benefit-text">
+                  <strong>Govt-approved fares</strong>
+                  <span className="benefit-subtext">(Because bargaining is exhausting)</span>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <span className="material-icons">currency_rupee</span>
+                <div className="benefit-text">
+                  <strong>Only ₹0.50 per ride, pay us later</strong>
+                  <span className="benefit-subtext">(When it hits ₹50, we'll politely remind you)</span>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <span className="material-icons">language</span>
+                <div className="benefit-text">
+                  <strong>Zero apps needed</strong>
+                  <span className="benefit-subtext">(We know your phone has enough clutter)</span>
+                </div>
+              </div>
             </div>
-            <div className="benefit-item">
-              <span className="material-icon">currency_rupee</span>
-              <span>Flat ₹0.50 fee, pay later</span>
-            </div>
-            <div className="benefit-item">
-              <span className="material-icon">touch_app</span>
-              <span>Instant control, no algorithms</span>
-            </div>
-          </div>
-        </button>
-      </section>
+          </button>
 
-      {/* Footer with FAQ Link */}
-      <section className="landing-footer">
-        <Link href="#" className="faq-link">How it works</Link>
-      </section>
+          {/* Driver Card */}
+          <button 
+            className="landing-card driver-card" 
+            onClick={() => router.push('/driver')}
+            aria-label="Driver options"
+          >
+            <div className="card-header">
+              <div className="card-icon driver-icon">
+                <span className="material-icons">local_taxi</span>
+              </div>
+              <h3 className="card-title">Drive</h3>
+            </div>
+            
+            <div className="card-benefits">
+              <div className="benefit-item">
+                <span className="material-icons">account_balance_wallet</span>
+                <div className="benefit-text">
+                  <strong>You keep 100% of your fare</strong>
+                  <span className="benefit-subtext">(We're too lazy to take percentages)</span>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <span className="material-icons">visibility</span>
+                <div className="benefit-text">
+                  <strong>See all trips clearly</strong>
+                  <span className="benefit-subtext">(No sneaky surprises)</span>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <span className="material-icons">currency_rupee</span>
+                <div className="benefit-text">
+                  <strong>Just ₹0.50 per ride, pay later</strong>
+                  <span className="benefit-subtext">(When it's worth our effort to ask)</span>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <span className="material-icons">touch_app</span>
+                <div className="benefit-text">
+                  <strong>No algorithms, all you</strong>
+                  <span className="benefit-subtext">(You probably know your routes better anyway)</span>
+                </div>
+              </div>
+            </div>
+          </button>
+        </section>
+
+        {/* Footer with FAQ Link */}
+        <section className="landing-footer">
+          <Link href="#" className="faq-link">
+            <span className="material-icons">help_outline</span>
+            <span>How it works <span className="faq-subtext">(Tap for honest answers, no corporate fluff)</span></span>
+          </Link>
+        </section>
+      </div>
     </div>
   );
 }
