@@ -1,3 +1,6 @@
+// src/app/page.tsx
+// This is the main landing page for the Yabna application.
+// It provides users with options to proceed as a Rider or a Driver.
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -5,12 +8,19 @@ import Link from 'next/link';
 import Image from 'next/image';
 import './styles/landing.css';
 
+/**
+ * YabnaLanding Component
+ * 
+ * The main landing page for the Yabna application.
+ * It allows users to choose between the Rider and Driver flows.
+ */
 export default function YabnaLanding() {
   const router = useRouter();
 
   return (
     <div className="landing-page">
       <div className="landing-container">
+        {/* Header Section: Contains the brand name, tagline, and a brief description */}
         {/* Top Section with Headline and Brand */}
         <section className="landing-header">
           <div className="brand-container">
@@ -22,12 +32,12 @@ export default function YabnaLanding() {
           </div>
         </section>
 
-        {/* Main Cards Section */}
+        {/* Main Cards Section: Displays options for Riders and Drivers */}
         <section className="landing-cards">
-          {/* Rider Card */}
+          {/* Rider Card: Navigates to the rider home page */}
           <button 
             className="landing-card rider-card" 
-            onClick={() => router.push('/home')}
+            onClick={() => router.push('/home')} // Navigate to the rider section
             aria-label="Rider options"
           >
             <div className="card-header">
@@ -56,7 +66,7 @@ export default function YabnaLanding() {
                 <span className="material-icons">currency_rupee</span>
                 <div className="benefit-text">
                   <strong>Only ₹0.50 per ride, pay us later</strong>
-                  <span className="benefit-subtext">(When it hits ₹50, we'll politely remind you)</span>
+                  <span className="benefit-subtext">(When it hits ₹20, we'll politely remind you)</span>
                 </div>
               </div>
               <div className="benefit-item">
@@ -69,10 +79,10 @@ export default function YabnaLanding() {
             </div>
           </button>
 
-          {/* Driver Card */}
+          {/* Driver Card: Navigates to the driver home page */}
           <button 
             className="landing-card driver-card" 
-            onClick={() => router.push('/driver')}
+            onClick={() => router.push('/driver')} // Navigate to the driver section
             aria-label="Driver options"
           >
             <div className="card-header">
@@ -115,7 +125,7 @@ export default function YabnaLanding() {
           </button>
         </section>
 
-        {/* Footer with FAQ Link */}
+        {/* Footer Section: Contains a link to the FAQ page */}
         <section className="landing-footer">
           <Link href="#" className="faq-link">
             <span className="material-icons">help_outline</span>

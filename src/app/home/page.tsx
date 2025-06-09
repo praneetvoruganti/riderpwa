@@ -1,3 +1,6 @@
+// src/app/home/page.tsx
+// This component serves as the main interface for riders after they log in.
+// It handles map interactions, ride booking, viewing past rides, settings, and more.
 "use client";
 
 import { useEffect, useState, useMemo, Suspense } from 'react';
@@ -10,23 +13,31 @@ import PermissionToggles from '../components/PermissionToggles';
 import VehicleClassCard, { VehicleClass } from '../components/VehicleClassCard';
 import MicroInteractions from '../components/MicroInteractions';
 
-// Import styles
+// Import styles for various parts of the home page
 import '../styles/permissionToggles.css';
 import '@/app/styles/mapDisplay.css';
 import '@/app/styles/vehicleSelection.css';
 import '@/app/styles/driverOffer.css';
 import '@/app/styles/compactScreens.css';
 
+// Dynamically import MapDisplay to optimize initial load time and handle client-side Leaflet rendering.
 const MapDisplay = dynamic(() => import('@/app/components/MapDisplay'), {
   ssr: false,
   loading: () => <p style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#616161' }}>Loading map...</p>
 });
 
+/**
+ * Interface to track the status of application-level permissions (e.g., geolocation, notifications).
+ */
 interface AppPermissionsStatus {
   geolocation: PermissionState | null;
   notifications: PermissionState | null;
 }
 
+/**
+ * Enum defining the different views or screens available within the HomePage component.
+ * This helps manage the UI state and what content is displayed to the user.
+ */
 enum HomePageView {
   MAP_AND_DESTINATION = 'MAP_AND_DESTINATION',
   VEHICLE_SELECTION = 'VEHICLE_SELECTION',
@@ -38,6 +49,9 @@ enum HomePageView {
   PROMISE2PAY = 'PROMISE2PAY'
 }
 
+/**
+ * Interface representing the details of a driver's offer for a ride.
+ */
 interface DriverOfferDetails {
   driverName: string;
   vehicleModel: string;
@@ -46,6 +60,9 @@ interface DriverOfferDetails {
   estimatedFare: number;
 }
 
+/**
+ * Interface representing the structure of a past ride's data.
+ */
 interface PastRide {
   id: string;
   date: string;
@@ -58,6 +75,9 @@ interface PastRide {
   status: 'completed' | 'cancelled';
 }
 
+/**
+ * Interface for storing user-specific settings and preferences.
+ */
 interface UserSettings {
   notifications: {
     rideUpdates: boolean;
@@ -74,6 +94,9 @@ interface UserSettings {
   };
 }
 
+/**
+ * Interface for the Promise2Pay feature, likely related to ride payment collections.
+ */
 interface Promise2PayData {
   currentCollection: {
     ridesCompleted: number;
@@ -103,13 +126,16 @@ interface Promise2PayData {
   }[];
 }
 
+/**
+ * Interface defining the parameters required for booking a trip.
+ */
 interface TripParameters {
   pickup: LatLngExpression;
   destination: string;
   radius: number;
 }
 
-// Mock past rides data
+// Mock data for past rides, used for development and testing purposes.
 const MOCK_PAST_RIDES: PastRide[] = [
   {
     id: '1',
@@ -168,7 +194,7 @@ const MOCK_PAST_RIDES: PastRide[] = [
   }
 ];
 
-// Mock user settings
+// Default user settings, used for development and initial state.
 const DEFAULT_USER_SETTINGS: UserSettings = {
   notifications: {
     rideUpdates: true,
@@ -185,6 +211,7 @@ const DEFAULT_USER_SETTINGS: UserSettings = {
   },
 };
 
+// Mock data for the Promise2Pay feature, for development and testing.
 const MOCK_PROMISE2PAY_DATA: Promise2PayData = {
   currentCollection: {
     ridesCompleted: 16,
@@ -224,6 +251,7 @@ const MOCK_PROMISE2PAY_DATA: Promise2PayData = {
   ],
 };
 
+// Mock data for available vehicle classes, for development and testing.
 const MOCK_VEHICLE_CLASSES: VehicleClass[] = [
   {
     id: 'auto',
@@ -255,8 +283,15 @@ const MOCK_VEHICLE_CLASSES: VehicleClass[] = [
   },
 ];
 
+/**
+ * HomePage Component
+ *
+ * This is the main component for the rider's experience after logging in.
+ * It manages views for booking rides, viewing history, settings, and permissions.
+ */
 export default function HomePage() {
-  // Import required CSS at the component level to ensure it's loaded
+  // Effect to load Material Icons font stylesheet dynamically.
+  // This ensures icons are available throughout the component.
   useEffect(() => {
     // Make sure material icons are loaded for the permission toggles
     const link = document.createElement('link');
@@ -268,33 +303,42 @@ export default function HomePage() {
       document.head.removeChild(link);
     };
   }, []);
-  const router = useRouter();
+  const router = useRouter(); // Next.js router for navigation.
+
+  // State for managing the current active view within the home page.
   const [currentView, setCurrentView] = useState<HomePageView>(HomePageView.MAP_AND_DESTINATION);
+  // State for storing parameters of the current trip being booked.
   const [tripParams, setTripParams] = useState<TripParameters | null>(null);
+  // State for the currently selected vehicle class by the user.
   const [selectedVehicleClass, setSelectedVehicleClass] = useState<VehicleClass | null>(null);
+  // State to track the number of attempts made to find a driver.
   const [searchAttempts, setSearchAttempts] = useState<number>(0);
+  // State to indicate if the app is currently searching for a driver.
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  // State for displaying messages related to the driver search status.
   const [searchStatusMessage, setSearchStatusMessage] = useState<string>('');
+  // State to hold details of a driver's offer, if one is found.
   const [driverOffer, setDriverOffer] = useState<DriverOfferDetails | null>(null);
 
-  // Permission state tracking - stores browser-level permission status
+  // State for tracking browser-level permission statuses (geolocation, notifications).
   const [permissionsStatus, setPermissionsStatus] = useState<AppPermissionsStatus>({
     geolocation: null,
     notifications: null,
   });
-  const [currentLocation, setCurrentLocation] = useState<LatLngExpression | null>(null);
-  const [locationError, setLocationError] = useState<string | null>(null);
-  const [destinationInput, setDestinationInput] = useState<string>(''); 
-  const [searchRadiusInput, setSearchRadiusInput] = useState<number>(1000); 
-  const [isRequestingNotification, setIsRequestingNotification] = useState<boolean>(false);
-  const [manualPickupLocation, setManualPickupLocation] = useState<LatLngExpression | null>(null);
-  const [isSelectingPickupMode, setIsSelectingPickupMode] = useState<boolean>(false);
-  const [tripDistance, setTripDistance] = useState<number | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [userSettings, setUserSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
-  const [pastRides, setPastRides] = useState<PastRide[]>(MOCK_PAST_RIDES);
-  const [promise2PayData, setPromise2PayData] = useState<Promise2PayData>(MOCK_PROMISE2PAY_DATA);
+  const [currentLocation, setCurrentLocation] = useState<LatLngExpression | null>(null); // User's current geographical location.
+  const [locationError, setLocationError] = useState<string | null>(null); // Error message related to location fetching.
+  const [destinationInput, setDestinationInput] = useState<string>(''); // User's input for the trip destination.
+  const [searchRadiusInput, setSearchRadiusInput] = useState<number>(1000); // User's input for search radius (currently not directly used in UI for radius adjustment by user).
+  const [isRequestingNotification, setIsRequestingNotification] = useState<boolean>(false); // True if a notification permission request is in progress.
+  const [manualPickupLocation, setManualPickupLocation] = useState<LatLngExpression | null>(null); // Pickup location manually selected by the user on the map.
+  const [isSelectingPickupMode, setIsSelectingPickupMode] = useState<boolean>(false); // True if the user is currently selecting a pickup location on the map.
+  const [tripDistance, setTripDistance] = useState<number | null>(null); // Estimated distance for the current trip.
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false); // True if the main menu dropdown is open.
+  const [userSettings, setUserSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS); // User's application settings.
+  const [pastRides, setPastRides] = useState<PastRide[]>(MOCK_PAST_RIDES); // List of the user's past rides.
+  const [promise2PayData, setPromise2PayData] = useState<Promise2PayData>(MOCK_PROMISE2PAY_DATA); // Data for the Promise2Pay feature.
 
+  // Effect to ensure the user is logged in. Redirects to login page if not.
   useEffect(() => {
     if (!isLoggedIn()) {
       router.replace('/login');
@@ -302,7 +346,8 @@ export default function HomePage() {
   }, [router]);
 
   /**
-   * Effect to fetch user location whenever permission status changes
+   * Effect to fetch the user's current location when geolocation permission is granted or changes.
+   * Updates `currentLocation` and `locationError` states accordingly.
    * This responds to both initial permission grants and changes from the toggles
    */
   useEffect(() => {
@@ -335,11 +380,19 @@ export default function HomePage() {
     }
   }, [permissionsStatus.geolocation]);
 
+  /**
+   * Handles user logout by clearing the session and redirecting to the login page.
+   */
   const handleLogout = () => {
     clearRiderSession();
     router.push('/login');
   };
 
+  /**
+   * Handles clicks on items in the main menu dropdown.
+   * Navigates to different views or triggers actions like logout.
+   * @param item - The string identifier of the clicked menu item.
+   */
   const handleMenuItemClick = (item: string) => {
     setIsMenuOpen(false);
     if (item === 'Past Rides') {
@@ -354,7 +407,8 @@ export default function HomePage() {
   };
 
   /**
-   * Updates the app's permission status based on changes from PermissionsManager
+   * Callback function for `PermissionsManager` to update the app's record of system-level permission states.
+   * @param perms - The latest status of application permissions.
    * This keeps track of system-level permission states (granted/denied/prompt)
    */
   const handlePermissionsUpdate = (perms: AppPermissionsStatus) => {
@@ -362,7 +416,12 @@ export default function HomePage() {
   };
 
   /**
-   * Handles changes from the permission toggle buttons
+   * Handles changes from the UI permission toggle buttons (e.g., for location or notifications).
+   * Manages the app-level enabled/disabled state for permissions, distinct from browser permissions.
+   * May trigger re-fetching location if location is re-enabled.
+   * 
+   * @param type - The type of permission being toggled ('location' or 'notification').
+   * @param enabled - The new state of the toggle (true for enabled, false for disabled).
    * This manages the app-level enabled/disabled state for permissions
    * which is separate from the browser's permission states
    * 
@@ -404,7 +463,8 @@ export default function HomePage() {
   };
 
   /**
-   * Request notification permission through system prompt
+   * Initiates a browser request for notification permission.
+   * Updates permission status based on user's response.
    * This is an alternative way to enable notifications besides using the toggle
    * Used primarily for the notification card button
    */
@@ -433,6 +493,11 @@ export default function HomePage() {
     setIsRequestingNotification(false);
   };
 
+  /**
+   * Handles clicks on the map.
+   * If in 'select pickup mode', sets the clicked LatLng as the manual pickup location.
+   * @param latlng - The geographical coordinates of the map click.
+   */
   const handleMapClick = (latlng: LatLng) => {
     if (isSelectingPickupMode) {
       setManualPickupLocation([latlng.lat, latlng.lng]);
@@ -440,10 +505,16 @@ export default function HomePage() {
     }
   };
 
+  /**
+   * Toggles the mode for selecting a pickup location on the map.
+   */
   const toggleSelectPickupMode = () => {
     setIsSelectingPickupMode(!isSelectingPickupMode);
   };
 
+  /**
+   * Sets the user's current location as the manual pickup location.
+   */
   const useCurrentLocationAsPickup = () => {
     if (currentLocation) {
       setManualPickupLocation(currentLocation);
@@ -451,13 +522,21 @@ export default function HomePage() {
     }
   };
 
+  /**
+   * Clears any manually selected pickup location and exits pickup selection mode.
+   */
   const clearManualPickup = () => {
     setManualPickupLocation(null);
     setIsSelectingPickupMode(false);
   };
   
+  // Determines the effective pickup location: manual selection takes precedence over current location.
   const effectivePickupLocation = manualPickupLocation || currentLocation;
 
+  /**
+   * Validates pickup and destination, then transitions to the vehicle selection view.
+   * Calculates a mock trip distance.
+   */
   const handleProceedToVehicleSelection = () => {
     if (effectivePickupLocation && destinationInput) {
       // Calculate a fixed distance between 5 and 54 km when pickup or destination changes
@@ -476,10 +555,17 @@ export default function HomePage() {
     }
   };
 
+  /**
+   * Sets the vehicle class selected by the user.
+   * @param vehicleClass - The chosen vehicle class object.
+   */
   const handleVehicleSelect = (vehicleClass: VehicleClass) => {
     setSelectedVehicleClass(vehicleClass);
   };
 
+  /**
+   * Transitions to the driver searching view and initiates the (simulated) search process.
+   */
   const handleProceedToSearch = () => {
     if (tripParams && selectedVehicleClass) {
         console.log('Proceeding to search with:', { 
@@ -497,6 +583,12 @@ export default function HomePage() {
     }
   };
 
+  /**
+   * Simulates the process of searching for a driver.
+   * After a delay, it mock-finds a driver or declares no driver found after 3 attempts.
+   * Updates search status messages and transitions to driver offer or back to vehicle selection.
+   * @param attempt - The current attempt number for finding a driver.
+   */
   const simulateDriverSearch = (attempt: number) => {
     setSearchStatusMessage(`Finding ${selectedVehicleClass?.name}... Attempt ${attempt}`);
     setTimeout(() => {
@@ -532,15 +624,19 @@ export default function HomePage() {
     return <p style={{ textAlign: 'center', marginTop: '50px', color: '#616161' }}>Redirecting to login...</p>;
   }
 
+  // Determines if the 'Continue' or 'Next' button should be disabled (e.g., if pickup or destination is missing).
   const isNextDisabled = !effectivePickupLocation || !destinationInput.trim();
 
+  // Determines if a general permission warning should be displayed (e.g., location denied).
   const showPermissionWarning =
     (permissionsStatus.geolocation === 'denied' || (permissionsStatus.geolocation === 'prompt' && !currentLocation)) ||
     (permissionsStatus.notifications === 'denied'); 
 
+  // Determines if the 'Enable Notifications' button/prompt should be shown.
   const showEnableNotificationsButton =
     permissionsStatus.notifications === 'prompt' || permissionsStatus.notifications === 'denied';
 
+  // Memoized text for displaying the user's current location status.
   const userLocationStatusText = useMemo(() => {
     if (locationError) return locationError;
     if (currentLocation) {
@@ -550,6 +646,7 @@ export default function HomePage() {
     return 'Fetching location...';
   }, [currentLocation, locationError, permissionsStatus.geolocation]);
 
+  // Memoized text for displaying the status of a manually selected pickup location.
   const manualPickupStatusText = useMemo(() => {
     if (manualPickupLocation) {
       const loc = L.latLng(manualPickupLocation);
@@ -558,6 +655,7 @@ export default function HomePage() {
     return 'No pickup selected.';
   }, [manualPickupLocation]);
 
+  // Render UI for Vehicle Selection view.
   if (currentView === HomePageView.VEHICLE_SELECTION) {
     if (!tripParams) {
         return (
@@ -584,7 +682,7 @@ export default function HomePage() {
           </button>
         </header>
         
-        {/* Vehicle Selection - Moved to top */}
+        {/* Vehicle Class Selection List */}
         <section className="premium-section mb-sm">
           <h2 className="premium-section-title mb-sm">Select Vehicle Type</h2>
           <div className="premium-vehicle-list">
@@ -624,7 +722,7 @@ export default function HomePage() {
           </div>
         </section>
         
-        {/* Trip Summary - Moved to bottom */}
+        {/* Trip Summary Display */}
         <div className="premium-trip-summary-card mb-sm">
           <div className="premium-compact-route">
             <div className="premium-route-point">
@@ -662,11 +760,13 @@ export default function HomePage() {
     );
   }
 
+  // Render UI for Searching for Driver view.
   if (currentView === HomePageView.SEARCHING_FOR_DRIVER) {
     return (
       <div className="container animate-fade-in">
         {/* Search Status */}
         <div className="premium-search-container">
+          {/* Header for search status */}
           <header className="premium-search-header">
             <h1 className="premium-search-title">Finding</h1>
             <p className="premium-search-subtitle">Connecting drivers</p>
@@ -702,7 +802,7 @@ export default function HomePage() {
             )}
           </div>
           
-          {/* Selected Vehicle */}
+          {/* Display of the selected vehicle during search */}
           {selectedVehicleClass && (
             <div className="premium-selected-vehicle">
               <div className="premium-selected-vehicle-icon">
@@ -745,6 +845,7 @@ export default function HomePage() {
     );
   }
 
+  // Render UI for Driver Offer view.
   if (currentView === HomePageView.DRIVER_OFFER) {
     if (!driverOffer || !tripParams || !selectedVehicleClass) {
       return (
@@ -777,7 +878,7 @@ export default function HomePage() {
             <h2>Driver Found!</h2>
           </div>
 
-          {/* Driver Info - Streamlined */}
+          {/* Compact display of driver information */}
           <div className="premium-driver-compact">
             <div className="premium-driver-avatar">
               <span className="material-icon">person</span>
@@ -798,9 +899,9 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Trip Details - Compact */}
+          {/* Compact display of trip details */}
           <div className="premium-compact-trip">
-            {/* Route */}
+            {/* Visual representation of pickup and destination */}
             <div className="premium-compact-route">
               <div className="premium-route-point">
                 <div className="premium-route-icon pickup">
@@ -823,7 +924,7 @@ export default function HomePage() {
               </div>
             </div>
             
-            {/* Trip Info - Horizontal layout */}
+            {/* Key trip information like vehicle type, distance, fare */}
             <div className="premium-trip-info-row">
               <div className="premium-trip-info-item">
                 <span className="material-icon">category</span>
@@ -851,7 +952,7 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Action Buttons */}
+          {/* Buttons to Cancel or Confirm the driver's offer */}
           <div className="premium-action-buttons">
             <button 
               onClick={() => setCurrentView(HomePageView.VEHICLE_SELECTION)}
@@ -875,6 +976,7 @@ export default function HomePage() {
     );
   }
 
+  // Render UI for Promise2Pay view.
   if (currentView === HomePageView.PROMISE2PAY) {
     return (
       <div className="container animate-fade-in">
@@ -892,6 +994,7 @@ export default function HomePage() {
         </div>
         
         <div className="compact-container">
+          {/* Progress Card: Shows current collection progress */}
           {/* Progress Card */}
           <div className="compact-card">
             <div className="progress-header">
@@ -915,19 +1018,21 @@ export default function HomePage() {
             </p>
           </div>
           
-          {/* Options Card */}
+          {/* Options Card: Allows selection of payment/collection options */}
           <div className="compact-card">
             <div className="card-section-title">Payment Options</div>
             
             {/* Standard Option */}
-            <div className="option-row">
+            <div className={`option-row ${promise2PayData.collectionOptions.standard.active ? 'collection-option-active' : 'collection-option-inactive'}`}>
               <div className="option-icon">
-                <span className="material-icon">calculate</span>
+                <span className="material-icon">add_circle_outline</span>
               </div>
               <div className="option-info">
-                <div className="option-title">Standard</div>
+                <div className="option-title">
+                  Standard Collection {promise2PayData.collectionOptions.standard.active ? '(Active)' : ''}
+                </div>
                 <div className="option-desc">
-                  Every {promise2PayData.collectionOptions.standard.ridesPerCollection} rides • ₹0.50 per ride
+                  Collect after every 20 rides (₹0.50 per ride)
                 </div>
               </div>
               <label className="toggle-switch">
@@ -955,44 +1060,30 @@ export default function HomePage() {
               </label>
             </div>
             
-            {/* Monthly Option */}
-            <div className="option-row">
-              <div className="option-icon">
+            {/* Monthly Option - Struck Through & Disabled */}
+            <div className="option-row collection-option-inactive">
+              <div className="option-icon" style={{ textDecoration: 'line-through' }}>
                 <span className="material-icon">calendar_month</span>
               </div>
               <div className="option-info">
-                <div className="option-title">Monthly</div>
-                <div className="option-desc">
-                  Once per month
+                <div className="option-title" style={{ textDecoration: 'line-through' }}>Monthly Collection</div>
+                <div className="option-desc" style={{ textDecoration: 'line-through' }}>
+                  Collect once a month regardless of ride count
                 </div>
               </div>
               <label className="toggle-switch">
                 <input 
                   type="checkbox" 
-                  checked={promise2PayData.collectionOptions.monthly.active} 
-                  onChange={() => {
-                    setPromise2PayData(prev => ({
-                      ...prev,
-                      collectionOptions: {
-                        ...prev.collectionOptions,
-                        standard: {
-                          ...prev.collectionOptions.standard,
-                          active: false
-                        },
-                        monthly: {
-                          ...prev.collectionOptions.monthly,
-                          active: true
-                        }
-                      }
-                    }));
-                  }}
+                  checked={false} 
+                  disabled={true}
+                  onChange={() => { /* No-op as it's disabled */ }}
                 />
                 <span className="toggle-slider"></span>
               </label>
             </div>
           </div>
           
-          {/* History Card */}
+          {/* History Card: Displays past collection history */}
           <div className="compact-card">
             <div className="card-section-title">Collection History</div>
             
@@ -1026,7 +1117,7 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Action Button */}
+          {/* Action Button: e.g., 'Pay Now' */}
           <button className="action-button">
             <span className="material-icon">payments</span>
             <span>Pay Now</span>
@@ -1036,6 +1127,7 @@ export default function HomePage() {
     );
   }
   
+  // Render UI for Past Rides view.
   if (currentView === HomePageView.PAST_RIDES) {
     return (
       <div className="container animate-fade-in">
@@ -1052,7 +1144,7 @@ export default function HomePage() {
           <div className="header-spacer"></div>
         </div>
         
-        {/* Past Rides List */}
+        {/* Container for displaying the list of past rides or an empty state message. */}
         <div className="rides-container">
           {pastRides.length === 0 ? (
             <div className="empty-state">
@@ -1071,6 +1163,7 @@ export default function HomePage() {
             </div>
           ) : (
             <>
+              {/* Tabs for filtering past rides (e.g., All, Completed, Cancelled) */}
               <div className="filter-tabs">
                 <button className="filter-tab active">All</button>
                 <button className="filter-tab">Completed</button>
@@ -1093,7 +1186,7 @@ export default function HomePage() {
                   
                   return (
                     <div key={ride.id} className={`ride-card ${ride.status === 'cancelled' ? 'cancelled' : ''}`}>
-                      {/* Card Header with Date/Time and Status */}
+                      {/* Ride Card Header: Displays date, time, and ride status */}
                       <div className="ride-header">
                         <div className="ride-datetime">
                           <span className="material-icon">event</span>
@@ -1104,7 +1197,7 @@ export default function HomePage() {
                         </div>
                       </div>
                       
-                      {/* Compact Route */}
+                      {/* Ride Card Route: Shows pickup and destination points */}
                       <div className="ride-route">
                         <div className="route-point">
                           <div className="point-marker pickup"></div>
@@ -1117,7 +1210,7 @@ export default function HomePage() {
                         </div>
                       </div>
                       
-                      {/* Trip Info Row */}
+                      {/* Ride Card Info: Driver name, fare, vehicle type, distance */}
                       <div className="ride-info-row">
                         <div className="driver-info">
                           <div className="driver-avatar">
@@ -1170,6 +1263,7 @@ export default function HomePage() {
     );
   }
   
+  // Render UI for Settings view.
   if (currentView === HomePageView.SETTINGS) {
     return (
       <div className="container animate-fade-in">
@@ -1185,9 +1279,9 @@ export default function HomePage() {
           <h1 className="premium-page-title">Settings</h1>
         </header>
         
-        {/* Settings Content */}
+        {/* Container for all settings sections */}
         <div className="premium-settings-container">
-          {/* Notification Settings */}
+          {/* Section for managing notification preferences */}
           <section className="premium-settings-section">
             <h2 className="premium-section-title">Notifications</h2>
             <div className="premium-settings-group">
@@ -1265,7 +1359,7 @@ export default function HomePage() {
             </div>
           </section>
           
-          {/* Payment Settings */}
+          {/* Section for managing payment method preferences */}
           <section className="premium-settings-section">
             <h2 className="premium-section-title">Payment Methods</h2>
             <div className="premium-settings-group">
@@ -1297,7 +1391,7 @@ export default function HomePage() {
             </div>
           </section>
           
-          {/* Preferences Settings */}
+          {/* Section for managing general app preferences (dark mode, language, currency) */}
           <section className="premium-settings-section">
             <h2 className="premium-section-title">Preferences</h2>
             <div className="premium-settings-group">
@@ -1379,7 +1473,7 @@ export default function HomePage() {
             </div>
           </section>
           
-          {/* Save Button */}
+          {/* Button to save the changed settings */}
           <button 
             onClick={() => {
               alert('Settings saved successfully!');
@@ -1396,6 +1490,7 @@ export default function HomePage() {
     );
   }
   
+  // Render UI for Trip Confirmation view.
   if (currentView === HomePageView.TRIP_CONFIRMATION) {
     if (!tripParams || !selectedVehicleClass || !driverOffer) {
       return (
@@ -1421,7 +1516,7 @@ export default function HomePage() {
     return (
       <div className="container animate-fade-in">
         <div className="premium-compact-card">
-          {/* Success Header */}
+          {/* Header indicating successful ride confirmation */}
           <div className="premium-success-header">
             <div className="premium-success-icon confirm">
               <span className="material-icon">check_circle</span>
@@ -1430,7 +1525,7 @@ export default function HomePage() {
             <p className="premium-success-subtitle">Your driver is on the way</p>
           </div>
           
-          {/* Driver Info - Compact */}
+          {/* Compact display of the confirmed driver's details */}
           <div className="premium-driver-details-card">
             <div className="premium-driver-compact">
               <div className="premium-driver-avatar">
@@ -1460,7 +1555,7 @@ export default function HomePage() {
             </button>
           </div>
           
-          {/* Trip Details - Horizontal Layout */}
+          {/* Display of key trip information (fare, distance, duration) */}
           <div className="premium-trip-info-box">
             <div className="premium-trip-info-row">
               <div className="premium-trip-info-item">
@@ -1489,7 +1584,7 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Route Details */}
+          {/* Display of pickup and destination for the confirmed trip */}
           <div className="premium-route-box">
             <div className="premium-route-point">
               <div className="premium-route-icon pickup">
@@ -1515,7 +1610,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* Book Again Button */}
+        {/* Button to quickly start a new booking */}
         <button 
           onClick={() => {
             setTripParams(null);
@@ -1536,11 +1631,11 @@ export default function HomePage() {
 
   return (
     <div className="container">
-      {/* For permissions management */}
+      {/* PermissionsManager component to handle system-level permission requests and updates. */}
       <PermissionsManager onPermissionsUpdate={handlePermissionsUpdate} />
       <MicroInteractions />
       
-      {/* Header */}
+      {/* Main application header: Displays brand logo and menu button. */}
       <header className="premium-header">
         <h1 className="brand-logo">Y A B N A <span className="brand-accent">.</span></h1>
         <div className="premium-menu-container">
@@ -1552,6 +1647,7 @@ export default function HomePage() {
             <span className="material-icon">{isMenuOpen ? 'close' : 'menu'}</span>
           </button>
           
+          {/* Dropdown menu, shown when isMenuOpen is true */}
           {isMenuOpen && (
             <div className="premium-menu-dropdown">
               <div className="premium-menu-items">
@@ -1587,7 +1683,7 @@ export default function HomePage() {
         </div>
       </header>
       
-      {/* Permission toggles aligned with UI elements */}
+      {/* PermissionToggles component: Always-visible UI toggles for app-level permission control. */}
       {/* Permission toggles component - shows always-visible toggles for location and notifications */}
       {/* Passes UI state flags to control opacity and passes callback for toggle interaction */}
       <PermissionToggles 
@@ -1596,14 +1692,15 @@ export default function HomePage() {
         onPermissionChange={handlePermissionToggle}
       />
 
+      {/* Main section for setting pickup and destination. */}
       {/* SOURCE AND DESTINATION SECTION - RANK 1 */}
-      {/* Pickup Controls - Source */}
+      {/* Section for selecting the pickup location. */}
       <section className="premium-section">
         <h3 className="premium-section-title">Pickup</h3>
         <div className="premium-card">
           <div className="premium-card-content">
             <div className="premium-option-group">
-              {/* Map Selection Button */}
+              {/* Button to toggle selecting pickup on the map. */}
               <button 
                 onClick={toggleSelectPickupMode} 
                 className={`premium-option-btn ${isSelectingPickupMode ? 'premium-option-active' : ''}`}
@@ -1614,7 +1711,7 @@ export default function HomePage() {
                 </div>
               </button>
               
-              {/* Current Location Button */}
+              {/* Button to use current GPS location as pickup. */}
               <button 
                 onClick={useCurrentLocationAsPickup} 
                 disabled={!currentLocation} 
@@ -1626,7 +1723,7 @@ export default function HomePage() {
                 </div>
               </button>
               
-              {/* Clear Button - Only show if location is set */}
+              {/* Button to clear a manually selected pickup location. */}
               {manualPickupLocation && (
                 <button 
                   onClick={clearManualPickup} 
@@ -1642,7 +1739,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* Location Status */}
+        {/* Displays status messages for current and manually selected pickup locations. */}
         <div className="premium-location-status">
           {userLocationStatusText && (
             <div className="premium-status-item">
@@ -1659,7 +1756,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Destination Input */}
+      {/* Section for entering the trip destination. */}
       <section className="premium-section">
         <div className="premium-section-row">
           <h3 className="premium-section-title">Destination</h3>
@@ -1684,7 +1781,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* MAP DISPLAY - RANK 2 */}
+      {/* Section displaying the interactive map. */}
       <section className="premium-section">
         <h3 className="premium-section-title">Map</h3>
         <div className={`premium-map-container ${isSelectingPickupMode ? 'selecting-mode' : ''}`}>
@@ -1696,7 +1793,7 @@ export default function HomePage() {
             isSelectingPickup={isSelectingPickupMode}
           />
           
-          {/* Map Status Overlay */}
+          {/* Overlay shown on the map when in pickup selection mode. */}
           {isSelectingPickupMode && (
             <div className="premium-map-overlay">
               <span className="material-icon">location_on</span>
@@ -1709,7 +1806,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CONTINUE BUTTON - RANK 1 */}
+      {/* Section containing the button to proceed to the next step (vehicle selection). */}
       {/* Next Button Section */}
       <section className="premium-section">
         <button 
@@ -1723,7 +1820,7 @@ export default function HomePage() {
         </button>
       </section>
 
-      {/* PERMISSION WARNINGS - RANK 3 (CONTEXTUAL) */}
+      {/* Section for displaying contextual warnings related to permissions. */}
       {showPermissionWarning && (
         <div className="premium-alert mb-md animate-fade-in">
           <div className="premium-alert-content">
@@ -1741,6 +1838,7 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* Card prompting the user to enable notifications if not already granted or if denied. */}
       {showEnableNotificationsButton && (
         <div className="premium-card mb-md animate-fade-in">
           <div className="premium-card-content">
